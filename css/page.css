@@ -1,0 +1,286 @@
+    #page-section{
+        padding-bottom: 50px;
+    }
+
+    #page-section h2{
+
+        color: #522206;
+    }
+
+
+
+    .bg-navigator{
+        text-align: left;
+        /*background: url(../images/pattern.png)repeat 0px 0px;*/
+        /*background-color: rgb(134, 0, 23);*/
+        font-size: 16px;
+        color: #333333;
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 100px;
+
+    }
+
+    .bg-navigator a:nth-child(1){padding-right: 15px;padding-left: 0px;margin: 15px 0;display: inline-block;text-decoration: none;border-right: solid 1px #6f6f6f;color: #ff962d;font-weight: 600;}
+
+    .bg-navigator a{
+        padding: 0px 15px;
+        display: inline-block;
+        text-decoration: none;
+        color: #6f6f6f;
+    }
+
+
+    .item-service {
+        position: relative;
+        display: block;
+        overflow: hidden
+    }
+
+    .item-service .img-service {
+        overflow: hidden;
+        background: #ff962d;
+    }
+
+    .item-service .img-service img {
+        opacity: 1;
+        transform: scale(1);
+        -ms-transform: scale(1);
+        -webkit-transform: scale(1);
+        -webkit-transition: all 0.5s ease-in;
+        -moz-transition: all 0.5s ease-in;
+        -o-transition: all 0.5s ease-in;
+        transition: all 0.5s ease-in
+    }
+
+    .item-service:hover .img-service img {
+        opacity: .5;
+        transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        -webkit-transform: scale(1.1);
+        -webkit-transition: all 0.5s ease-in;
+        -moz-transition: all 0.5s ease-in;
+        -o-transition: all 0.5s ease-in;
+        transition: all 0.5s ease-in
+    }
+
+    .item-service .text-service {
+        background: rgb(0, 0, 0);
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgb(82 35 10) 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 30px;
+        padding-bottom: 30px;
+        padding-top: 30px;
+        -webkit-transition: all 0.5s ease-in-out;
+        -khtml-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -ms-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out
+    }
+
+    .item-service .text-service h4 {
+        color: #fff;
+        font-weight: 400;
+    }
+
+
+
+
+    .item-product{
+        position: relative;
+        display: inline-block;
+        background: #ac8970;
+        border-radius: 30px;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+
+    .item-product:hover{
+        background: #ff962d;
+    }
+
+
+    .item-product .img-product{
+        margin: 30px;
+    }
+
+    .item-product .img-product img{
+        border-radius: 100%;
+        overflow: hidden;
+
+        margin-top: -100px;
+    }
+
+    .item-product .text-product{
+       margin-bottom: 30px;
+   }
+   .item-product .text-product h4{
+       font-size: 20px;
+       color: #ffffff;
+   }
+
+
+
+
+
+
+
+/* -------------------------------------- */
+
+.cooking-ol ol{
+    counter-reset: li;
+    list-style: none;
+    *list-style: decimal;
+    font: 15px;
+    padding: 0;
+    margin-bottom: 4em;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+.cooking-ol ol ol{
+    margin: 0 0 0 2em;
+}
+
+
+
+/* -------------------------------------- */
+
+.cooking-ol ol li{
+    position: relative;
+    display: block;
+    padding: 10px;
+    margin: 0 0px 10px 2.5em;
+    background: transparent;
+    border: 1px solid #ac8970;
+    border-radius: 10px;
+    color: #000000;
+    text-decoration: none;
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+}
+
+
+
+.cooking-ol ol li:before{
+    content: counter(li);
+    counter-increment: li;
+    position: absolute;
+    left: -2.5em;
+    top: 50%;
+    margin-top: -1em;
+    background: #52230a;
+    color: #ffffff;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    text-align: center;
+    font-weight: 500;
+}
+
+.cooking-ol ol li:after{
+    position: absolute; 
+    content: '';
+    border: .5em solid transparent;
+    left: -1em;
+    top: 50%;
+    margin-top: -.5em;
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out;               
+}
+
+.cooking-ol ol li:after{
+    left: -.5em;
+    border-left-color: #52230a;
+}
+
+
+
+
+
+
+
+
+
+
+
+.cooking-ol ol li:nth-child(odd){
+    border: 2px solid #ac8970;
+}
+
+
+
+
+.cooking-ol ol li:nth-child(odd):before{
+   background: #ac8970;
+}
+
+.cooking-ol ol li:nth-child(odd):after{
+    border-left-color: #ac8970;        
+}
+
+
+
+.cooking-ol ol li:nth-child(even){
+    border: 2px solid #ff962d;
+}
+
+
+
+
+.cooking-ol ol li:nth-child(even):before{
+   background: #ff962d;
+}
+
+.cooking-ol ol li:nth-child(even):after{
+    border-left-color: #ff962d;        
+}
+
+
+
+/* -------------------------------------- */
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 992px) {
+    .bg-navigator {
+
+        margin-bottom: 50px;
+    }
+}
+
+
+
+@media (min-width: 768px) {
+
+
+
+}
+@media (min-width: 992px) {
+
+
+  #page-section{
+    padding-bottom: 100px;
+    background: #f5f5f5;
+}
+
+
+
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2020 by original authors @ fontello.com</metadata>
+<defs>
+<font id="fontello" horiz-adv-x="1000" >
+<font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="parking" unicode="&#xe800;" d="M550 607h-179v-514h59v163h120c95 0 173 77 173 173v6c0 95-78 172-173 172z m114-178c0-63-51-115-114-115h-120v235h120c63 0 114-51 114-114v-6z m190 275c-95 94-220 146-354 146s-259-52-354-146c-94-95-146-220-146-354s52-259 146-354 220-146 354-146 259 52 354 146c94 95 146 220 146 354s-52 259-146 354z m-42-666c-83-84-194-129-312-129-118 0-229 45-312 129-83 83-129 194-129 312 0 118 46 229 129 312 83 84 194 129 312 129 118 0 229-45 312-129 84-83 129-194 129-312 0-118-45-229-129-312z" horiz-adv-x="1000" />
+</font>
+</defs>
+</svg>

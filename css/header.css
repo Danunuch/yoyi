@@ -1,0 +1,26 @@
+.lang{
+    margin: 10px 0px;
+    position: absolute;
+    right: 0;
+    top: 20px;
+    z-index: 99;
+}
+
+.core-nav.nav-core-sticky.on-scroll .lang{
+ top: 20px;
+}
+.lang a{color: #000000;padding: 5px 10px;}
+.lang a:hover{
+    background: #ff962d;
+}
+.lang a.active{
+    background: #ff962d;
+}
+
+@media (min-width: 992px) {
+.lang{
+
+    top: -50px;
+  
+}
+}

@@ -1,0 +1,41 @@
+    #product-section .bg-parallax{
+        padding: 100px 0px;
+    }
+
+    #product-section h2{
+        
+        color: #522206;
+    }
+
+
+    .btn-product{
+        display: block;
+        text-align: center;
+        font-size: 35px;
+        margin-bottom: 20px;
+        background: rgb(255 150 45 / 75%);
+        color: #522106;
+        padding: 25px 15px;
+    }
+
+    .btn-product:hover{
+     
+        background: #522106;
+        color: #ff962d;
+    }
+
+
+
+    @media (min-width: 768px) {
+
+
+
+    }
+    @media (min-width: 992px) {
+
+
+
+
+
+
+    }
