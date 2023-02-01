@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -10,40 +10,40 @@ if (!isset($_SESSION['admin_login'])) {
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
-if (isset($_POST['save_content'])) {
-    $content = $_POST['content'];
-    $link = $_POST['link'];
+// if (isset($_POST['save_content'])) {
+//     $content = $_POST['content'];
+//     $link = $_POST['link'];
 
-    $update_content = $conn->prepare("UPDATE content_1_home SET content = :content, link = :link");
-    $update_content->bindParam(":content", $content);
-    $update_content->bindParam(":link", $link);
-    $update_content->execute();
+//     $update_content = $conn->prepare("UPDATE content_1_home SET content = :content, link = :link");
+//     $update_content->bindParam(":content", $content);
+//     $update_content->bindParam(":link", $link);
+//     $update_content->execute();
 
-    if ($update_content) {
-        echo "<script>
-                    $(document).ready(function() {
-                        Swal.fire({
-                            text: 'แก้ไขข้อมูลสำเร็จ',
-                            icon: 'success',
-                            timer: 10000,
-                            showConfirmButton: false
-                        });
-                    })
-                    </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=home_content'>";
-    } else {
-        echo "<script>alert('มีบางอย่างผิดพลาด')</script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=home_content'>";
-    }
-}
+//     if ($update_content) {
+//         echo "<script>
+//                     $(document).ready(function() {
+//                         Swal.fire({
+//                             text: 'แก้ไขข้อมูลสำเร็จ',
+//                             icon: 'success',
+//                             timer: 10000,
+//                             showConfirmButton: false
+//                         });
+//                     })
+//                     </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=home_content'>";
+//     } else {
+//         echo "<script>alert('มีบางอย่างผิดพลาด')</script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=home_content'>";
+//     }
+// }
 
 
 
-//query content_home
-$content_home = $conn->prepare("SELECT * FROM content_1_home");
-$content_home->execute();
-$row_content_home = $content_home->fetch(PDO::FETCH_ASSOC);
-?>
+// //query content_home
+// $content_home = $conn->prepare("SELECT * FROM content_1_home");
+// $content_home->execute();
+// $row_content_home = $content_home->fetch(PDO::FETCH_ASSOC);
+// ?>
 
 
 <html lang="en">
@@ -56,7 +56,7 @@ $row_content_home = $content_home->fetch(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
     <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">

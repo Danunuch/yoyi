@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -11,287 +11,287 @@ if (!isset($_SESSION['admin_login'])) {
 }
 
 //add event
-if (isset($_POST['add_event'])) {
-    $img_cover = $_FILES['img_cover'];
-    $topic = $_POST['topic'];
-    $content = $_POST['content'];
-    $link = $_POST['link'];
-    $status = "on";
+// if (isset($_POST['add_event'])) {
+//     $img_cover = $_FILES['img_cover'];
+//     $topic = $_POST['topic'];
+//     $content = $_POST['content'];
+//     $link = $_POST['link'];
+//     $status = "on";
 
-    $allow = array('jpg', 'jpeg', 'png', 'webp');
-    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
-    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
-    $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+//     $allow = array('jpg', 'jpeg', 'png', 'webp');
+//     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+//     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+//     $fileNew1 = rand() . "." . "webp";
+//     $filePath1 = "uploads/upload_event/" . $fileNew1;
 
-    if (empty($topic)) {
-        echo "<script>alert('กรุณากรอกหัวเรื่อง')</script>";
-    } else if (empty($link)) {
-        echo "<script>alert('กรุณากรอกลิงค์สำหรับไปที่โพสต์')</script>";
-    } else {
-        try {
-            if (in_array($fileActExt1, $allow)) {
-                if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
-                    if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                        $add_event = $conn->prepare("INSERT INTO event(cover_img,topic,content,link,status) VALUES(:cover_img, :topic, :content, :link, :status)");
-                        $add_event->bindParam(":cover_img", $fileNew1);
-                        $add_event->bindParam(":topic", $topic);
-                        $add_event->bindParam(":content", $content);
-                        $add_event->bindParam(":link", $link);
-                        $add_event->bindParam(":status", $status);
-                        $add_event->execute();
+//     if (empty($topic)) {
+//         echo "<script>alert('กรุณากรอกหัวเรื่อง')</script>";
+//     } else if (empty($link)) {
+//         echo "<script>alert('กรุณากรอกลิงค์สำหรับไปที่โพสต์')</script>";
+//     } else {
+//         try {
+//             if (in_array($fileActExt1, $allow)) {
+//                 if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+//                     if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+//                         $add_event = $conn->prepare("INSERT INTO event(cover_img,topic,content,link,status) VALUES(:cover_img, :topic, :content, :link, :status)");
+//                         $add_event->bindParam(":cover_img", $fileNew1);
+//                         $add_event->bindParam(":topic", $topic);
+//                         $add_event->bindParam(":content", $content);
+//                         $add_event->bindParam(":link", $link);
+//                         $add_event->bindParam(":status", $status);
+//                         $add_event->execute();
 
-                        if ($add_event) {
-                            echo "<script>
-                            $(document).ready(function() {
-                                Swal.fire({
-                                    text: 'เพิ่มกิจกรรมสำเร็จ',
-                                    icon: 'success',
-                                    timer: 10000,
-                                    showConfirmButton: false
-                                });
-                            })
-                            </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-                        } else {
-                            echo "<script>
-                            $(document).ready(function() {
-                                Swal.fire({
-                                    text: 'มีบางอย่างผิดพลาด',
-                                    icon: 'error',
-                                    timer: 10000,
-                                    showConfirmButton: false
-                                });
-                            })
-                            </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-                        }
-                    }
-                }
-            }
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-    }
-}
+//                         if ($add_event) {
+//                             echo "<script>
+//                             $(document).ready(function() {
+//                                 Swal.fire({
+//                                     text: 'เพิ่มกิจกรรมสำเร็จ',
+//                                     icon: 'success',
+//                                     timer: 10000,
+//                                     showConfirmButton: false
+//                                 });
+//                             })
+//                             </script>";
+//                             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//                         } else {
+//                             echo "<script>
+//                             $(document).ready(function() {
+//                                 Swal.fire({
+//                                     text: 'มีบางอย่างผิดพลาด',
+//                                     icon: 'error',
+//                                     timer: 10000,
+//                                     showConfirmButton: false
+//                                 });
+//                             })
+//                             </script>";
+//                             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//                         }
+//                     }
+//                 }
+//             }
+//         } catch (PDOException $e) {
+//             echo $e->getMessage();
+//         }
+//     }
+// }
 
-//edit event
-if (isset($_POST['edit_event'])) {
-    $event_id = $_POST['event_id'];
-    $img_cover = $_FILES['img_cover'];
-    $topic = $_POST['topic'];
-    $content = $_POST['content'];
-    $link = $_POST['link'];
+// //edit event
+// if (isset($_POST['edit_event'])) {
+//     $event_id = $_POST['event_id'];
+//     $img_cover = $_FILES['img_cover'];
+//     $topic = $_POST['topic'];
+//     $content = $_POST['content'];
+//     $link = $_POST['link'];
 
-    $allow = array('jpg', 'jpeg', 'png', 'webp');
-    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
-    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
-    $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+//     $allow = array('jpg', 'jpeg', 'png', 'webp');
+//     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+//     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+//     $fileNew1 = rand() . "." . "webp";
+//     $filePath1 = "uploads/upload_event/" . $fileNew1;
 
-    if (in_array($fileActExt1, $allow)) {
-        if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
-            if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                $edit_event = $conn->prepare("UPDATE event SET cover_img = :cover_img, topic = :topic, content = :content,link = :link WHERE id = :id");
-                $edit_event->bindParam(":cover_img", $fileNew1);
-                $edit_event->bindParam(":topic", $topic);
-                $edit_event->bindParam(":content", $content);
-                $edit_event->bindParam(":link", $link);
-                $edit_event->bindParam(":id", $event_id);
-                $edit_event->execute();
+//     if (in_array($fileActExt1, $allow)) {
+//         if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+//             if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+//                 $edit_event = $conn->prepare("UPDATE event SET cover_img = :cover_img, topic = :topic, content = :content,link = :link WHERE id = :id");
+//                 $edit_event->bindParam(":cover_img", $fileNew1);
+//                 $edit_event->bindParam(":topic", $topic);
+//                 $edit_event->bindParam(":content", $content);
+//                 $edit_event->bindParam(":link", $link);
+//                 $edit_event->bindParam(":id", $event_id);
+//                 $edit_event->execute();
 
-                if ($edit_event) {
-                    echo "<script>
-                    $(document).ready(function() {
-                        Swal.fire({
-                            text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
-                            icon: 'success',
-                            timer: 10000,
-                            showConfirmButton: false
-                        });
-                    })
-                    </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-                } else {
-                    echo "<script>
-                    $(document).ready(function() {
-                        Swal.fire({
-                            text: 'มีบางอย่างผิดพลาด',
-                            icon: 'error',
-                            timer: 10000,
-                            showConfirmButton: false
-                        });
-                    })
-                    </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-                }
-            }
-        }
-    } else {
-        $edit_event = $conn->prepare("UPDATE event SET  topic = :topic, content = :content,link = :link WHERE id = :id");
-        $edit_event->bindParam(":topic", $topic);
-        $edit_event->bindParam(":content", $content);
-        $edit_event->bindParam(":link", $link);
-        $edit_event->bindParam(":id", $event_id);
-        $edit_event->execute();
+//                 if ($edit_event) {
+//                     echo "<script>
+//                     $(document).ready(function() {
+//                         Swal.fire({
+//                             text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
+//                             icon: 'success',
+//                             timer: 10000,
+//                             showConfirmButton: false
+//                         });
+//                     })
+//                     </script>";
+//                     echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//                 } else {
+//                     echo "<script>
+//                     $(document).ready(function() {
+//                         Swal.fire({
+//                             text: 'มีบางอย่างผิดพลาด',
+//                             icon: 'error',
+//                             timer: 10000,
+//                             showConfirmButton: false
+//                         });
+//                     })
+//                     </script>";
+//                     echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//                 }
+//             }
+//         }
+//     } else {
+//         $edit_event = $conn->prepare("UPDATE event SET  topic = :topic, content = :content,link = :link WHERE id = :id");
+//         $edit_event->bindParam(":topic", $topic);
+//         $edit_event->bindParam(":content", $content);
+//         $edit_event->bindParam(":link", $link);
+//         $edit_event->bindParam(":id", $event_id);
+//         $edit_event->execute();
 
-        if ($edit_event) {
-            echo "<script>
-            $(document).ready(function() {
-                Swal.fire({
-                    text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
-                    icon: 'success',
-                    timer: 10000,
-                    showConfirmButton: false
-                });
-            })
-            </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-        } else {
-            echo "<script>
-            $(document).ready(function() {
-                Swal.fire({
-                    text: 'มีบางอย่างผิดพลาด',
-                    icon: 'error',
-                    timer: 10000,
-                    showConfirmButton: false
-                });
-            })
-            </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-        }
-    }
-}
-
-
-//update intro event
-if (isset($_POST['save_event'])) {
-    $intro = $_POST['intro'];
-
-    $update_event = $conn->prepare("UPDATE intro_event SET content = :content");
-    $update_event->bindParam(":content", $intro);
-    $update_event->execute();
-
-    if ($update_event) {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'แก้ไขข้อมูลสำเร็จ',
-                icon: 'success',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-    } else {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'มีบางอย่างผิดพลาด',
-                icon: 'error',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-    }
-}
-
-//change status
-
-if (isset($_POST['change-status'])) {
-    $check = $_POST['check'];
-    $event_id = $_POST['event_id'];
-    // echo "<script>alert('dddddd $check')</script>";
-    $stmt = $conn->prepare("UPDATE event SET status = :status WHERE id =  :id");
-    $stmt->bindParam(":status", $check);
-    $stmt->bindParam(":id", $event_id);
-    $stmt->execute();
-
-    if ($stmt) {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'เปลี่ยนสถานะเสร็จสิ้น',
-                icon: 'success',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-    } else {
-        echo "<script>alert('Something Went Wrong!!!')</script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-    }
-}
+//         if ($edit_event) {
+//             echo "<script>
+//             $(document).ready(function() {
+//                 Swal.fire({
+//                     text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
+//                     icon: 'success',
+//                     timer: 10000,
+//                     showConfirmButton: false
+//                 });
+//             })
+//             </script>";
+//             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//         } else {
+//             echo "<script>
+//             $(document).ready(function() {
+//                 Swal.fire({
+//                     text: 'มีบางอย่างผิดพลาด',
+//                     icon: 'error',
+//                     timer: 10000,
+//                     showConfirmButton: false
+//                 });
+//             })
+//             </script>";
+//             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//         }
+//     }
+// }
 
 
-//delete event all
-if (isset($_POST['delete_all'])) {
-    if (count((array)$_POST['ids']) > 0) {
-        $all = implode(",", $_POST['ids']);
+// //update intro event
+// if (isset($_POST['save_event'])) {
+//     $intro = $_POST['intro'];
 
-        $del_event = $conn->prepare("DELETE FROM event WHERE id in ($all)");
-        $del_event->execute();
+//     $update_event = $conn->prepare("UPDATE intro_event SET content = :content");
+//     $update_event->bindParam(":content", $intro);
+//     $update_event->execute();
 
-        if ($del_event) {
-            echo "<script>
-            $(document).ready(function() {
-                Swal.fire({
-                    text: 'ลบกิจกรรมสำเร็จ',
-                    icon: 'success',
-                    timer: 10000,
-                    showConfirmButton: false
-                });
-            })
-            </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-        } else {
-            echo "<script>alert('Something Went Wrong!!!')</script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-        }
-    } else {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'ต้องคลิกเลือกกิจกรรมก่อนทำการลบ',
-                icon: 'warning',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event'>";
-    }
-}
+//     if ($update_event) {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'แก้ไขข้อมูลสำเร็จ',
+//                 icon: 'success',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//     } else {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'มีบางอย่างผิดพลาด',
+//                 icon: 'error',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//     }
+// }
 
-//query intro
-$intro = $conn->prepare("SELECT * FROM intro_event");
-$intro->execute();
-$row_intro = $intro->fetch(PDO::FETCH_ASSOC);
+// //change status
+
+// if (isset($_POST['change-status'])) {
+//     $check = $_POST['check'];
+//     $event_id = $_POST['event_id'];
+//     // echo "<script>alert('dddddd $check')</script>";
+//     $stmt = $conn->prepare("UPDATE event SET status = :status WHERE id =  :id");
+//     $stmt->bindParam(":status", $check);
+//     $stmt->bindParam(":id", $event_id);
+//     $stmt->execute();
+
+//     if ($stmt) {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'เปลี่ยนสถานะเสร็จสิ้น',
+//                 icon: 'success',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//     } else {
+//         echo "<script>alert('Something Went Wrong!!!')</script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//     }
+// }
 
 
-$page = $_GET['page'];
-$event_count = $conn->prepare("SELECT * FROM event");
-$event_count->execute();
-$count_event = $event_count->fetchAll();
+// //delete event all
+// if (isset($_POST['delete_all'])) {
+//     if (count((array)$_POST['ids']) > 0) {
+//         $all = implode(",", $_POST['ids']);
 
-$rows = 10;
-if ($page == "") {
-    $page = 1;
-}
+//         $del_event = $conn->prepare("DELETE FROM event WHERE id in ($all)");
+//         $del_event->execute();
 
-$total_data = count($count_event);
-$total_page = ceil($total_data / $rows);
-$start = ($page - 1) * $rows;
+//         if ($del_event) {
+//             echo "<script>
+//             $(document).ready(function() {
+//                 Swal.fire({
+//                     text: 'ลบกิจกรรมสำเร็จ',
+//                     icon: 'success',
+//                     timer: 10000,
+//                     showConfirmButton: false
+//                 });
+//             })
+//             </script>";
+//             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//         } else {
+//             echo "<script>alert('Something Went Wrong!!!')</script>";
+//             echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//         }
+//     } else {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'ต้องคลิกเลือกกิจกรรมก่อนทำการลบ',
+//                 icon: 'warning',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=event'>";
+//     }
+// }
 
-$event = $conn->prepare("SELECT * FROM event LIMIT $start,10");
-$event->execute();
-$row_event = $event->fetchAll();
-?>
+// //query intro
+// $intro = $conn->prepare("SELECT * FROM intro_event");
+// $intro->execute();
+// $row_intro = $intro->fetch(PDO::FETCH_ASSOC);
+
+
+// $page = $_GET['page'];
+// $event_count = $conn->prepare("SELECT * FROM event");
+// $event_count->execute();
+// $count_event = $event_count->fetchAll();
+
+// $rows = 10;
+// if ($page == "") {
+//     $page = 1;
+// }
+
+// $total_data = count($count_event);
+// $total_page = ceil($total_data / $rows);
+// $start = ($page - 1) * $rows;
+
+// $event = $conn->prepare("SELECT * FROM event LIMIT $start,10");
+// $event->execute();
+// $row_event = $event->fetchAll();
+// ?>
 
 
 <html lang="en">

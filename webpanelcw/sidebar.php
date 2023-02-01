@@ -3,7 +3,7 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-center align-items-center">
                 <div class="logo mt-4">
-                    <a href="index.php"><img src="../images/icon-logo.png" alt="Logo" style="width: 250px; height: 95px;"></a>
+                    <a href="index.php"><img src="../images/logo.svg" alt="Logo" style="width: 140px; height: 130px;"></a>
                 </div>
                 <!-- <span style="font-size: 18px;">SUBSIN SYSTEM</span> -->
                 <div class="theme-toggle d-flex gap-2  align-items-center mt-2">

@@ -1,19 +1,15 @@
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
-error_reporting(0);
 
 if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $_SESSION['username'] = $username;
-
-
     if (empty($username)) {
-        echo "<script>alert('Please Enter Username')</script>";
+        echo "<script>alert('กรุณากรอก Username')</script>";
     } else if (empty($password)) {
-        echo "<script>alert('Please Enter Password')</script>";
+        echo "<script>alert('กรุณากรอก Password')</script>";
     } else {
         try {
             $check_data = $conn->prepare("SELECT * FROM admin WHERE username = :username");
@@ -21,19 +17,19 @@ if (isset($_POST['submit'])) {
             $check_data->execute();
             $row = $check_data->fetch(PDO::FETCH_ASSOC);
 
-            if ($check_data->rowCount() > 0) {
-                if ($username == $row['username']) {
-                    if (password_verify($password, $row['password'])) {
+            if($check_data->rowCount() > 0 ){
+                if($username == $row['username']){
+                    if(password_verify($password, $row['password'])){
                         $_SESSION['admin_login'] = $row['id'];
                         header("location: home");
-                    } else {
-                        echo "<script>alert('Password Invalid')</script>";
+                    }else{
+                        echo "<script>alert('Password ไม่ถูกต้อง')</script>";
                     }
-                } else {
-                    echo "<script>alert('Username Invalid')</script>";
+                }else{
+                    echo "<script>alert('Username ไม่ถูกต้อง')</script>";
                 }
-            } else {
-                echo "<script>alert('Username or Password Invalid')</script>";
+            }else{
+                echo "<script>alert('Username หรือ Password ไม่ถูกต้อง')</script>";
             }
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -44,11 +40,10 @@ if (isset($_POST['submit'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Tonsakcorner</title>
+    <title>Login - Yo Yi Foods Co., Ltd.</title>
 
     <link rel="stylesheet" href="assets/css/main/app.css">
     <link rel="stylesheet" href="css/login.css?v=<?php echo time(); ?>">
@@ -57,27 +52,25 @@ if (isset($_POST['submit'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg">
 </head>
 
 <body>
     <div class="login-app">
         <div class="box-login">
             <div class="header-img">
-                <img src="../images/logo.svg" width="40%" alt="">
-                <!-- <h5>Marothai Login</h5> -->
+                <img src="../images/logo.svg" width="20%" alt="">
+               
             </div>
             <form method="post">
-                <div class="box-sub">
-                    <div class="box-input">
-                        <label for="username">Username</label>
-                        <input type="text" name="username" value="<?php echo $_SESSION['username']; ?>" class="form-control">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" class="form-control">
-                    </div>
-                    <div class="btn-login">
-                        <button type="submit" name="submit" class="btn btn-submit">Login</button>
-                    </div>
+                <div class="box-input">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" class="form-control">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control">
+                </div>
+                <div class="btn-login">
+                    <button type="submit" name="submit" class="btn btn-submit">Login</button>
                 </div>
             </form>
         </div>

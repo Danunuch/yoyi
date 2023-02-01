@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -12,58 +12,58 @@ if (!isset($_SESSION['admin_login'])) {
 
 
 //update contact
-if (isset($_POST['save_contact'])) {
-    $address = $_POST['address'];
-    $phone = $_POST['phone'];
-    $email = $_POST['email'];
-    $facebook = $_POST['facebook'];
-    $line = $_POST['line'];
-    $instragram = $_POST['instragram'];
-    $map = $_POST['map'];
+// if (isset($_POST['save_contact'])) {
+//     $address = $_POST['address'];
+//     $phone = $_POST['phone'];
+//     $email = $_POST['email'];
+//     $facebook = $_POST['facebook'];
+//     $line = $_POST['line'];
+//     $instragram = $_POST['instragram'];
+//     $map = $_POST['map'];
 
-    $update_contact = $conn->prepare("UPDATE contact SET address = :address, phone = :phone, email = :email, facebook = :facebook, line = :line, instragram = :instragram, map = :map");
-    $update_contact->bindParam(":address", $address);
-    $update_contact->bindParam(":phone", $phone);
-    $update_contact->bindParam(":email", $email);
-    $update_contact->bindParam(":facebook", $facebook);
-    $update_contact->bindParam(":line", $line);
-    $update_contact->bindParam(":instragram", $instragram);
-    $update_contact->bindParam(":map", $map);
-    $update_contact->execute();
+//     $update_contact = $conn->prepare("UPDATE contact SET address = :address, phone = :phone, email = :email, facebook = :facebook, line = :line, instragram = :instragram, map = :map");
+//     $update_contact->bindParam(":address", $address);
+//     $update_contact->bindParam(":phone", $phone);
+//     $update_contact->bindParam(":email", $email);
+//     $update_contact->bindParam(":facebook", $facebook);
+//     $update_contact->bindParam(":line", $line);
+//     $update_contact->bindParam(":instragram", $instragram);
+//     $update_contact->bindParam(":map", $map);
+//     $update_contact->execute();
 
-    if ($update_contact) {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'แก้ไขข้อมูลสำเร็จ',
-                icon: 'success',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=contact'>";
-    } else {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'มีบางอย่างผิดพลาด',
-                icon: 'error',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=contact'>";
-    }
-}
+//     if ($update_contact) {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'แก้ไขข้อมูลสำเร็จ',
+//                 icon: 'success',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=contact'>";
+//     } else {
+//         echo "<script>
+//         $(document).ready(function() {
+//             Swal.fire({
+//                 text: 'มีบางอย่างผิดพลาด',
+//                 icon: 'error',
+//                 timer: 10000,
+//                 showConfirmButton: false
+//             });
+//         })
+//         </script>";
+//         echo "<meta http-equiv='refresh' content='1.5;url=contact'>";
+//     }
+// }
 
 
-//query contact
-$contact = $conn->prepare("SELECT * FROM contact");
-$contact->execute();
-$row_contact = $contact->fetch(PDO::FETCH_ASSOC);
-?>
+// //query contact
+// $contact = $conn->prepare("SELECT * FROM contact");
+// $contact->execute();
+// $row_contact = $contact->fetch(PDO::FETCH_ASSOC);
+// ?>
 
 
 <html lang="en">

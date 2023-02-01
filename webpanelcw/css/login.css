@@ -16,18 +16,11 @@ body{
 .box-login {
     width: 500px;
     max-width: 80%;
-
     height: fit-content;
     box-shadow: 2px 2px 8px 4px rgba(49, 75, 170, 0.2);
     /* border: 2px solid #435ebe; */
-    background-color: #db4834;
-    border-radius: 10px;
-}
-.box-sub{
     background-color: #FFFFFF;
-    border-radius: 0px 0px 10px 10px;
-    height: 250px;
-    padding: 20px;
+    border-radius: 10px;
 }
 
 .header-img {
@@ -59,7 +52,7 @@ h5 {
     width: 120px;
     height: 35px;
     margin: 20px auto;
-    background-color: #435ebe;
+    background-color: #52230a;
     color: #FFFFFF;
     display: flex;
     justify-content: center;
