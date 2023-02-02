@@ -35,42 +35,51 @@
         <div class="sidebar-menu">
             <ul class="menu">
                 <!-- <li class="sidebar-title">Menu</li> -->
-                <li class="sidebar-item home has-sub" id="home">
-                    <a href="" class='sidebar-link'>
+                <li class="sidebar-item home " id="home">
+                    <a href="home" class='sidebar-link'>
                         <i class="bi bi-house-fill"></i>
                         <span>หน้าแรก</span>
-                    </a>
-                    <ul class="submenu">
-                        <li class="submenu-item has-sub">
-                            <a href="home" class='sidebar-link'>ภาพสไลด์</a>
-                            <a href="home_content" class='sidebar-link'>เนื้อหาหน้าเเรก</a>
-                            <a href="attention" class='sidebar-link'>ความสนใจ</a>
-                            <a href="service" class='sidebar-link'>บริการ</a>
-                            <a href="news" class='sidebar-link'>ข่าวสาร</a>
-                            <a href="logo" class='sidebar-link'>ร้านอาหารและบริการ</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="sidebar-item  about" id="about">
-                    <a href="event" class='sidebar-link'>
-                        <i class="bi bi-calendar2-event"></i>
-                        <span>กิจกรรม</span>
-                    </a>
-                </li>
-                <li class="sidebar-item  about " id="about">
-                    <a href="map_all" class='sidebar-link'>
-                        <i class="bi bi-collection"></i>
-                        <span>แผนผัง</span>
                     </a>
                 </li>
 
 
                 <li class="sidebar-item  about" id="about">
                     <a href="about" class='sidebar-link'>
-                        <i class="bi bi-file-person"></i>
+                        <i class="bi bi-bank"></i>
                         <span>เกี่ยวกับเรา</span>
                     </a>
                 </li>
+
+                <li class="sidebar-item  product" id="product">
+                    <a href="product" class='sidebar-link'>
+                        <i class="bi bi-basket2-fill"></i>
+                        <span>สินค้า</span>
+                    </a>
+                </li>
+
+
+                <li class="sidebar-item  about " id="about">
+                    <a href="news" class='sidebar-link'>
+                        <i class="bi bi-newspaper"></i>
+                        <span>ข่าวสาร</span>
+                    </a>
+                </li>
+
+
+                <li class="sidebar-item  about " id="about">
+                    <a href="cooking" class='sidebar-link'>
+                        <i class="bi bi-cup-hot-fill"></i>
+                        <span>Cooking Time</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item has-sub">
+                            <a href="type_cook" class='sidebar-link'>หมวดหมู่</a>
+                            <a href="cook_detail" class='sidebar-link'>วิธีการปรุงอาหาร</a>
+                        </li>
+                    </ul>
+                </li>
+
+
                 <li class="sidebar-item  about" id="about">
                     <a href="contact" class='sidebar-link'>
                         <i class="bi bi-telephone"></i>

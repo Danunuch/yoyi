@@ -10,146 +10,106 @@ if (!isset($_SESSION['admin_login'])) {
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
-// //add slide
-// if (isset($_POST['addslide'])) {
-//     $img = $_FILES['img'];
-//     $status = "on";
+if (isset($_POST['save_content'])) {
+    $intro = $_POST['intro'];
+    $topic = $_POST['topic'];
+    $content1 = $_POST['content1'];
+    $content2 = $_POST['content2'];
+    $content3 = $_POST['content3'];
+    $content4 = $_POST['content4'];
+    $img_cover = $_FILES['img_cover'];
 
-//     $allow = array('jpg', 'jpeg', 'png', 'webp');
-//     $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
-//     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
-//     $fileNew1 = rand() . "." . "webp";
-//     $filePath1 = "uploads/upload_slide/" . $fileNew1;
+    $allow = array('jpg', 'jpeg', 'png', 'webp');
+    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    $fileNew1 = rand() . "." . "webp";
+    $filePath1 = "uploads/upload_intro/" . $fileNew1;
 
-//     if (in_array($fileActExt1, $allow)) {
-//         if ($img['size'] > 0 && $img['error'] == 0) {
-//             if (move_uploaded_file($img['tmp_name'], $filePath1)) {
-//                 $insert_slide = $conn->prepare("INSERT INTO slide(image,status) VALUES(:image,:status)");
-//                 $insert_slide->bindParam(":image", $fileNew1);
-//                 $insert_slide->bindParam(":status", $status);
-//                 $insert_slide->execute();
 
-//                 if ($insert_slide) {
-//                     echo "<script>
-//                     $(document).ready(function() {
-//                         Swal.fire({
-//                             text: 'เพิ่มภาพสไลด์สำเร็จ',
-//                             icon: 'success',
-//                             timer: 10000,
-//                             showConfirmButton: false
-//                         });
-//                     })
-//                     </script>";
-//                     echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//                 } else {
-//                     echo "<script>alert('มีบางอย่างผิดพลาด')</script>";
-//                     echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//                 }
-//             }
-//         }
-//     }
-// }
+    if (in_array($fileActExt1, $allow)) {
+        if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+            if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                $update_home = $conn->prepare("UPDATE intro_content SET intro = :intro, topic = :topic, content1 = :content1, content2 = :content2 ,content3 = :content3, content4 = :content4 ,img_cover = :img_cover");
+                $update_home->bindParam(":intro", $intro);
+                $update_home->bindParam(":topic", $topic);
+                $update_home->bindParam(":content1", $content1);
+                $update_home->bindParam(":content2", $content2);
+                $update_home->bindParam(":content3", $content3);
+                $update_home->bindParam(":content4", $content4);
+                $update_home->bindParam(":img_cover", $fileNew1);
+                $update_home->execute();
 
-// //edit slide
-// if (isset($_POST['editslide'])) {
-//     $id_slide = $_POST['id_slide'];
-//     $img_edit = $_FILES['img_edit'];
+                if ($update_home) {
+                    echo "<script>
+                    $(document).ready(function() {
+                        Swal.fire({
+                            text: 'แก้ไขข้อมูลสำเร็จ',
+                            icon: 'success',
+                            timer: 10000,
+                            showConfirmButton: false
+                        });
+                    })
+                    </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=home'>";
+                } else {
+                    echo "<script>
+                        $(document).ready(function() {
+                            Swal.fire({
+                                text: 'มีบางอย่างผิดพลาด',
+                                icon: 'error',
+                                timer: 10000,
+                                showConfirmButton: false
+                            });
+                        })
+                        </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=home'>";
+                }
+            }
+        }
+    } else {
+        $update_home = $conn->prepare("UPDATE intro_content SET intro = :intro, topic = :topic, content1 = :content1, content2 = :content2 ,content3 = :content3, content4 = :content4");
+        $update_home->bindParam(":intro", $intro);
+        $update_home->bindParam(":topic", $topic);
+        $update_home->bindParam(":content1", $content1);
+        $update_home->bindParam(":content2", $content2);
+        $update_home->bindParam(":content3", $content3);
+        $update_home->bindParam(":content4", $content4);
+        $update_home->execute();
 
-//     $allow = array('jpg', 'jpeg', 'png', 'webp');
-//     $extention1 = explode(".", $img_edit['name']); //เเยกชื่อกับนามสกุลไฟล์
-//     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
-//     $fileNew1 = rand() . "." . "webp";
-//     $filePath1 = "uploads/upload_slide/" . $fileNew1;
+        if ($update_home) {
+            echo "<script>
+            $(document).ready(function() {
+                Swal.fire({
+                    text: 'แก้ไขข้อมูลสำเร็จ',
+                    icon: 'success',
+                    timer: 10000,
+                    showConfirmButton: false
+                });
+            })
+            </script>";
+            echo "<meta http-equiv='refresh' content='1.5;url=home'>";
+        } else {
+            echo "<script>
+        $(document).ready(function() {
+            Swal.fire({
+                text: 'มีบางอย่างผิดพลาด',
+                icon: 'error',
+                timer: 10000,
+                showConfirmButton: false
+            });
+        })
+        </script>";
+            echo "<meta http-equiv='refresh' content='1.5;url=home'>";
+        }
+    }
+}
 
-//     if (in_array($fileActExt1, $allow)) {
-//         if ($img_edit['size'] > 0 && $img_edit['error'] == 0) {
-//             if (move_uploaded_file($img_edit['tmp_name'], $filePath1)) {
-//                 $update_slide = $conn->prepare("UPDATE slide SET image =:image WHERE id = :id");
-//                 $update_slide->bindParam(":image", $fileNew1);
-//                 $update_slide->bindParam(":id", $id_slide);
-//                 $update_slide->execute();
 
-//                 if ($update_slide) {
-//                     echo "<script>
-//         $(document).ready(function() {
-//             Swal.fire({
-//                 text: 'แก้ไขภาพสไลด์สำเร็จ',
-//                 icon: 'success',
-//                 timer: 10000,
-//                 showConfirmButton: false
-//             });
-//         })
-//         </script>";
-//                     echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//                 } else {
-//                     echo "<script>alert('มีบางอย่างผิดพลาด')</script>";
-//                     echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// //del
-// if (isset($_POST['delete_slide'])) {
-//     $slide_id = $_POST['delete_slide'];
-
-//     $del_slide = $conn->prepare("DELETE FROM slide WHERE id = :id");
-//     $del_slide->bindParam(":id", $slide_id);
-//     $del_slide->execute();
-
-//     if ($del_slide) {
-//         echo "<script>
-//         $(document).ready(function() {
-//             Swal.fire({
-//                 text: 'ลบภาพสไลด์สำเร็จ',
-//                 icon: 'success',
-//                 timer: 10000,
-//                 showConfirmButton: false
-//             });
-//         })
-//         </script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//     } else {
-//         echo "<script>alert('มีบางอย่างผิดพลาด')</script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//     }
-// }
-
-// //change status
-
-// if (isset($_POST['change-status'])) {
-//     $check = $_POST['check'];
-//     $slide_id = $_POST['slide_id'];
-//     // echo "<script>alert('dddddd $check')</script>";
-//     $stmt = $conn->prepare("UPDATE slide SET status = :status WHERE id =  :id");
-//     $stmt->bindParam(":status", $check);
-//     $stmt->bindParam(":id", $slide_id);
-//     $stmt->execute();
-
-//     if ($stmt) {
-//         echo "<script>
-//         $(document).ready(function() {
-//             Swal.fire({
-//                 text: 'เปลี่ยนสถานะเสร็จสิ้น',
-//                 icon: 'success',
-//                 timer: 10000,
-//                 showConfirmButton: false
-//             });
-//         })
-//         </script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//     } else {
-//         echo "<script>alert('Something Went Wrong!!!')</script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=home'>";
-//     }
-// }
-
-// //query slide
-// $slide = $conn->prepare("SELECT * FROM slide");
-// $slide->execute();
-// $row_slide = $slide->fetchAll();
-// ?>
+//query content_home
+$content_home = $conn->prepare("SELECT * FROM intro_content");
+$content_home->execute();
+$row_content_home = $content_home->fetch(PDO::FETCH_ASSOC);
+?>
 
 
 <html lang="en">
@@ -161,8 +121,7 @@ if (!isset($_SESSION['admin_login'])) {
 
     <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
-    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/logo.svg">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -188,151 +147,55 @@ if (!isset($_SESSION['admin_login'])) {
             <section class="section">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">จัดการภาพสไลด์</h4>
+                        <h4 class="card-title">เนื้อหาหน้าเเรก</h4>
                         <div class="btn-lang">
-                            <!-- <a href="home" style="background-color: #DB4834; color: #FFFFFF;" class="btn">EN</a> -->
+                            <a href="home_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
                         </div>
 
 
                     </div>
                     <div class="card-body">
-                        <div class="mt-2" style="display: flex; justify-content: flex-end;">
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addslide" style="background-color: #52230a; color: #FFFFFF; margin-right: 5px;">เพิ่มภาพสไลด์</button>
-                        </div>
+                        <form method="post" enctype="multipart/form-data">
+                            <textarea name="intro"><?php echo $row_content_home['intro'] ?></textarea>
+                           <br><textarea name="topic"><?php echo $row_content_home['topic'] ?></textarea>
+                           <br><textarea name="content1"><?php echo $row_content_home['content1'] ?></textarea>
+                           <br><textarea name="content2"><?php echo $row_content_home['content2'] ?></textarea>
+                           <br><textarea name="content3"><?php echo $row_content_home['content3'] ?></textarea>
+                           <br><textarea name="content4"><?php echo $row_content_home['content4'] ?></textarea>
 
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr align="center">
-
-                                        <th scope="col" width="33%">ภาพสไลด์</th>
-                                        <th scope="col" width="33%">สถานะ</th>
-                                        <th scope="col" width="33%">จัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody align="center">
-                                    <?php
-                                    foreach ($row_slide as $row_slide) { ?>
-                                        <tr>
-                                            <td><img width="80%" src="uploads/upload_slide/<?php echo $row_slide['image'] ?>" alt=""></td>
-                                            <td>
-                                                <a type="input" class="btn" <?php if ($row_slide['status'] == "on") {
-                                                                                echo " style='background-color: #06c258;color: #FFF;'";
-                                                                            } else {
-                                                                                echo " style='background-color: #DB4834;color: #FFF;'";
-                                                                            } ?> data-bs-toggle="modal" href="#status<?php echo $row_slide['id'] ?>" id="setting"><i class="bi bi-gear"></i></a>
-                                            </td>
-                                            <td>
-                                                <form method="post">
-                                                    <a type="input" class="btn" data-bs-toggle="modal" href="#editslide<?php echo $row_slide['id'] ?>" style="background-color:#ffc107; color: #FFFFFF;"><i class="bi bi-pencil-square"></i></a>
-                                                    <button class="btn" onclick="return confirm('ต้องการลบกิจกรรมนี้ใช่หรือไม่?');" value="<?php echo $row_slide['id'] ?>" name="delete_slide" style="background-color:#DB4834; color: #FFFFFF;"><i class="bi bi-trash"></i></button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <!-- Modal Status -->
-                                        <div class="modal fade" id="status<?php echo $row_slide['id'] ?>" data-bs-backdrop="static" aria-hidden="true">
-                                            <div class="modal-dialog  modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">จัดการสถานะการมองเห็น</h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-check form-switch">
-                                                            <form method="post">
-                                                                <div class="switch-box">
-                                                                    <span>OFF</span>
-                                                                    <input type="hidden" name="slide_id" value="<?php echo $row_slide['id']; ?>">
-                                                                    <input class="form-check-input" id="switch-check" name="check" type="checkbox" <?php if ($row_slide['status'] == "on") {
-                                                                                                                                                        echo "checked";
-                                                                                                                                                    } else {
-                                                                                                                                                        echo "";
-                                                                                                                                                    } ?>>
-                                                                    <span>ON</span>
-                                                                </div>
-                                                                <div class="box-btn">
-                                                                    <button name="change-status" class="btn" style="background-color: #DB4834; color: #FFFFFF;" type="submit">บันทึก</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Modal Edit slide -->
-                                        <div class="modal fade" id="editslide<?php echo $row_slide["id"] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-md modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                                                            แก้ไขภาพสไลด์
-                                                        </h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form method="post" enctype="multipart/form-data">
-                                                            <div class="row">
-                                                                <div class="col-md-12 mt-2">
-                                                                <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 2000 x 1000</span>
-                                                                    <input type="hidden" name="id_slide" value="<?php echo $row_slide['id']; ?>">
-                                                                    <input type="file" name="img_edit" id="imgInput1" class="form-control">
-                                                                    <div id="gallery d-flex justify-content-center align-item-center">
-                                                                        <img width="100%" id="previewImg1" src="uploads/upload_slide/<?php echo $row_slide['image'] ?>">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <button class="btn" name="editslide" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php  }
-
-                                    ?>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal Add slide -->
-                <div class="modal fade" id="addslide" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-md modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                                    เพิ่มภาพสไลด์
-                                </h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" enctype="multipart/form-data">
-                                    <div class="row">
-                                        <div class="col-md-12 mt-2">
-                                            <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 2000 x 1000</span>
-                                            <input type="file" name="img" id="imgInput" class="form-control">
-                                            <div id="gallery d-flex justify-content-center align-item-center">
-                                                <img width="100%" id="previewImg">
-                                            </div>
+                            <div class="col-md-12">
+                            <br><h6>Image</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="file" name="img_cover" id="imgInput" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="gallery d-flex justify-content-center align-item-center">
+                                            <img width="60%" id="previewImg" src="uploads/upload_intro/<?php echo $row_content_home['img_cover'] ?>">
                                         </div>
                                     </div>
-                                    <div class="mt-3">
-                                        <button class="btn" name="addslide" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
 
-                        </div>
+
+
+                            <div class="mt-3">
+                                <button class="btn" name="save_content" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
+                <script>
+                    tinymce.init({
+                        selector: 'textarea',
+                        plugins: 'autolink  code  image  lists table   wordcount',
+                        toolbar: ' blocks fontfamily fontsize code | bold italic underline strikethrough |  image table  mergetags | addcomment showcomments  | align lineheight | checklist numlist bullist indent outdent | removeformat',
+                        images_upload_url: 'upload.php',
+                        branding: false,
+                        promotion: false,
+                        height: 300
+                    });
+                </script>
             </section>
             <?php include('footer.php'); ?>
         </div>

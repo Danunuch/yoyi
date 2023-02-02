@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -10,51 +10,50 @@ if (!isset($_SESSION['admin_login'])) {
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
-//add event
-if (isset($_POST['add_event'])) {
+//add product
+if (isset($_POST['add_product'])) {
     $img_cover = $_FILES['img_cover'];
-    $topic = $_POST['topic'];
+    $product_name = $_POST['product_name'];
     $content = $_POST['content'];
-    $link = $_POST['link'];
+    $detail = $_POST['detail'];
+    $link_video = $_POST['link_video'];
+    $link_catalog = $_POST['link_catalog'];
     $status = "on";
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
     $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+    $filePath1 = "uploads/upload_product/" . $fileNew1;
 
-    if (empty($topic)) {
-        echo "<script>alert('กรุณากรอกหัวเรื่อง')</script>";
-    } else if (empty($link)) {
-        echo "<script>alert('กรุณากรอกลิงค์สำหรับไปที่โพสต์')</script>";
-    } else {
-        try {
-            if (in_array($fileActExt1, $allow)) {
-                if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
-                    if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                        $add_event = $conn->prepare("INSERT INTO event_en(cover_img,topic,content,link,status) VALUES(:cover_img, :topic, :content, :link, :status)");
-                        $add_event->bindParam(":cover_img", $fileNew1);
-                        $add_event->bindParam(":topic", $topic);
-                        $add_event->bindParam(":content", $content);
-                        $add_event->bindParam(":link", $link);
-                        $add_event->bindParam(":status", $status);
-                        $add_event->execute();
+    try {
+        if (in_array($fileActExt1, $allow)) {
+            if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+                if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                    $add_product = $conn->prepare("INSERT INTO product(img_cover, product_name, content, detail, link_video, link_catalog, status) VALUES(:img_cover, :product_name, :content, :detail, :link_video, :link_catalog, :status)");
+                    $add_product->bindParam(":img_cover", $fileNew1);
+                    $add_product->bindParam(":product_name", $product_name);
+                    $add_product->bindParam(":content", $content);
+                    $add_product->bindParam(":detail", $detail);
+                    $add_product->bindParam(":link_video", $link_video);
+                    $add_product->bindParam(":link_catalog", $link_catalog);
+                    $add_product->bindParam(":status", $status);
+                    $add_product->execute();
 
-                        if ($add_event) {
-                            echo "<script>
+                    if ($add_product) {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
-                                    text: 'เพิ่มกิจกรรมสำเร็จ',
+                                    text: 'เพิ่มผลิตภัณฑ์สำเร็จ',
                                     icon: 'success',
                                     timer: 10000,
                                     showConfirmButton: false
                                 });
                             })
                             </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
-                        } else {
-                            echo "<script>
+                        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
+                    } else {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -64,54 +63,62 @@ if (isset($_POST['add_event'])) {
                                 });
                             })
                             </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
-                        }
+                        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
                     }
                 }
             }
-        } catch (PDOException $e) {
-            echo $e->getMessage();
         }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
     }
 }
 
-//edit event
-if (isset($_POST['edit_event'])) {
-    $event_id = $_POST['event_id'];
+
+//edit product
+if (isset($_POST['edit_product'])) {
+    $product_id = $_POST['product_id'];
     $img_cover = $_FILES['img_cover'];
-    $topic = $_POST['topic'];
+    $product_name = $_POST['product_name'];
     $content = $_POST['content'];
-    $link = $_POST['link'];
+    $detail = $_POST['detail'];
+    $link_video = $_POST['link_video'];
+    $link_catalog = $_POST['link_catalog'];
+    $status = "on";
+
+
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
     $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+    $filePath1 = "uploads/upload_product/" . $fileNew1;
 
     if (in_array($fileActExt1, $allow)) {
         if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
             if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                $edit_event = $conn->prepare("UPDATE event_en SET cover_img = :cover_img, topic = :topic, content = :content,link = :link WHERE id = :id");
-                $edit_event->bindParam(":cover_img", $fileNew1);
-                $edit_event->bindParam(":topic", $topic);
-                $edit_event->bindParam(":content", $content);
-                $edit_event->bindParam(":link", $link);
-                $edit_event->bindParam(":id", $event_id);
-                $edit_event->execute();
+                $edit_product = $conn->prepare("UPDATE product SET img_cover = :img_cover, product_name = :product_name, content = :content, detail = :detail, link_video = :link_video, link_catalog = :link_catalog , status = :status WHERE id_product = :id");
+                $edit_product->bindParam(":img_cover", $fileNew1);
+                $edit_product->bindParam(":product_name", $product_name);
+                $edit_product->bindParam(":content", $content);
+                $edit_product->bindParam(":detail", $detail);
+                $edit_product->bindParam(":link_video", $link_video);
+                $edit_product->bindParam(":link_catalog", $link_catalog);
+                $edit_product->bindParam(":status", $status);
+                $edit_product->bindParam(":id", $product_id);
+                $edit_product->execute();
 
-                if ($edit_event) {
+                if ($edit_product) {
                     echo "<script>
                     $(document).ready(function() {
                         Swal.fire({
-                            text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
+                            text: 'แก้ไขข้อมูลผลิตภัณฑ์สำเร็จ',
                             icon: 'success',
                             timer: 10000,
                             showConfirmButton: false
                         });
                     })
                     </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=product'>";
                 } else {
                     echo "<script>
                     $(document).ready(function() {
@@ -123,30 +130,33 @@ if (isset($_POST['edit_event'])) {
                         });
                     })
                     </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=product'>";
                 }
             }
         }
     } else {
-        $edit_event = $conn->prepare("UPDATE event_en SET  topic = :topic, content = :content,link = :link WHERE id = :id");
-        $edit_event->bindParam(":topic", $topic);
-        $edit_event->bindParam(":content", $content);
-        $edit_event->bindParam(":link", $link);
-        $edit_event->bindParam(":id", $event_id);
-        $edit_event->execute();
+        $edit_product = $conn->prepare("UPDATE product SET product_name = :product_name, content = :content, detail = :detail, link_video = :link_video, link_catalog = :link_catalog , status = :status WHERE id_product = :id");
+        $edit_product->bindParam(":product_name", $product_name);
+        $edit_product->bindParam(":content", $content);
+        $edit_product->bindParam(":detail", $detail);
+        $edit_product->bindParam(":link_video", $link_video);
+        $edit_product->bindParam(":link_catalog", $link_catalog);
+        $edit_product->bindParam(":status", $status);
+        $edit_product->bindParam(":id", $product_id);
+        $edit_product->execute();
 
-        if ($edit_event) {
+        if ($edit_product) {
             echo "<script>
             $(document).ready(function() {
                 Swal.fire({
-                    text: 'แก้ไขข้อมูลกิจกรรมสำเร็จ',
+                    text: 'แก้ไขข้อมูลผลิตภัณฑ์สำเร็จ',
                     icon: 'success',
                     timer: 10000,
                     showConfirmButton: false
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=product'>";
         } else {
             echo "<script>
             $(document).ready(function() {
@@ -158,56 +168,19 @@ if (isset($_POST['edit_event'])) {
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=product'>";
         }
     }
 }
 
-
-//update intro event
-if (isset($_POST['save_event'])) {
-    $intro = $_POST['intro'];
-
-    $update_event = $conn->prepare("UPDATE intro_event_en SET content = :content");
-    $update_event->bindParam(":content", $intro);
-    $update_event->execute();
-
-    if ($update_event) {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'แก้ไขข้อมูลสำเร็จ',
-                icon: 'success',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
-    } else {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'มีบางอย่างผิดพลาด',
-                icon: 'error',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
-    }
-}
-
 //change status
-
 if (isset($_POST['change-status'])) {
     $check = $_POST['check'];
-    $event_id = $_POST['event_id'];
-    // echo "<script>alert('dddddd $check')</script>";
-    $stmt = $conn->prepare("UPDATE event_en SET status = :status WHERE id =  :id");
+    $product_id = $_POST['product_id'];
+
+    $stmt = $conn->prepare("UPDATE product SET status = :status WHERE id_product =  :id_product");
     $stmt->bindParam(":status", $check);
-    $stmt->bindParam(":id", $event_id);
+    $stmt->bindParam(":id_product", $product_id);
     $stmt->execute();
 
     if ($stmt) {
@@ -221,76 +194,72 @@ if (isset($_POST['change-status'])) {
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
     } else {
         echo "<script>alert('Something Went Wrong!!!')</script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
     }
 }
 
 
-//delete event all
+//delete product all
 if (isset($_POST['delete_all'])) {
     if (count((array)$_POST['ids']) > 0) {
         $all = implode(",", $_POST['ids']);
 
-        $del_event = $conn->prepare("DELETE FROM event_en WHERE id in ($all)");
-        $del_event->execute();
+        $del_product = $conn->prepare("DELETE FROM product WHERE id_product in ($all)");
+        $del_product->execute();
 
-        if ($del_event) {
+        if ($del_product) {
             echo "<script>
             $(document).ready(function() {
                 Swal.fire({
-                    text: 'ลบกิจกรรมสำเร็จ',
+                    text: 'ลบผลิตภัณฑ์สำเร็จ',
                     icon: 'success',
                     timer: 10000,
                     showConfirmButton: false
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+            echo "<meta http-equiv='refresh' content='1.6;url=product'>";
         } else {
             echo "<script>alert('Something Went Wrong!!!')</script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=product'>";
         }
     } else {
         echo "<script>
         $(document).ready(function() {
             Swal.fire({
-                text: 'ต้องคลิกเลือกกิจกรรมก่อนทำการลบ',
+                text: 'กรุณาคลิกเลือกผลิตภัณฑ์ก่อนทำการลบ',
                 icon: 'warning',
                 timer: 10000,
                 showConfirmButton: false
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=event_en'>";
+        echo "<meta http-equiv='refresh' content='1.6;url=product'>";
     }
 }
 
-//query intro
-$intro = $conn->prepare("SELECT * FROM intro_event_en");
-$intro->execute();
-$row_intro = $intro->fetch(PDO::FETCH_ASSOC);
 
 
 $page = $_GET['page'];
-$event_count = $conn->prepare("SELECT * FROM event_en");
-$event_count->execute();
-$count_event = $event_count->fetchAll();
+$product_count = $conn->prepare("SELECT * FROM product");
+$product_count->execute();
+$count_product = $product_count->fetchAll();
 
 $rows = 10;
 if ($page == "") {
     $page = 1;
 }
 
-$total_data = count($count_event);
+$total_data = count($count_product);
 $total_page = ceil($total_data / $rows);
 $start = ($page - 1) * $rows;
 
-$event = $conn->prepare("SELECT * FROM event_en LIMIT $start,10");
-$event->execute();
-$row_event = $event->fetchAll();
+$product = $conn->prepare("SELECT * FROM product LIMIT $start,10");
+$product->execute();
+$row_product = $product->fetchAll();
 ?>
 
 
@@ -299,12 +268,11 @@ $row_event = $event->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TONSAKCORNER</title>
+    <title>Yo Yi Foods Co., Ltd.</title>
 
     <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
-    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,58 +293,16 @@ $row_event = $event->fetchAll();
             </header>
 
             <div class="page-heading">
-                <h3>กิจกรรม</h3>
+                <h3>ผลิตภัณฑ์</h3>
             </div>
             <section class="section">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">จัดการกิจกรรมภาษาอังกฤษ</h4>
+                        <h4 class="card-title">ผลิตภัณฑ์</h4>
                         <div class="btn-lang">
-                            <a href="event" style="background-color: #DB4834; color: #FFFFFF;" class="btn">TH</a>
+                            <a href="product_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
                         </div>
                         <script>
-                            const image_upload_handler_callback = (blobInfo, progress) => new Promise((resolve, reject) => {
-                                const xhr = new XMLHttpRequest();
-                                xhr.withCredentials = false;
-                                xhr.open('POST', 'upload.php');
-
-                                xhr.upload.onprogress = (e) => {
-                                    progress(e.loaded / e.total * 100);
-                                };
-
-                                xhr.onload = () => {
-                                    if (xhr.status === 403) {
-                                        reject({
-                                            message: 'HTTP Error: ' + xhr.status,
-                                            remove: true
-                                        });
-                                        return;
-                                    }
-
-                                    if (xhr.status < 200 || xhr.status >= 300) {
-                                        reject('HTTP Error: ' + xhr.status);
-                                        return;
-                                    }
-
-                                    const json = JSON.parse(xhr.responseText);
-
-                                    if (!json || typeof json.location != 'string') {
-                                        reject('Invalid JSON: ' + xhr.responseText);
-                                        return;
-                                    }
-
-                                    resolve(json.location);
-                                };
-
-                                xhr.onerror = () => {
-                                    reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-                                };
-
-                                const formData = new FormData();
-                                formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-                                xhr.send(formData);
-                            });
                             tinymce.init({
                                 selector: 'textarea',
                                 plugins: 'autolink  code  image  lists table   wordcount',
@@ -384,22 +310,17 @@ $row_event = $event->fetchAll();
                                 images_upload_url: 'upload.php',
                                 branding: false,
                                 promotion: false,
-                                height: 300
+                                height: 270
                             });
                         </script>
 
                     </div>
                     <div class="card-body">
                         <form method="post">
-                            <h6>เกริ่นนำภาษาอังกฤษ</h6>
-                            <textarea name="intro"><?php echo $row_intro['content'] ?></textarea>
-                            <div class="mt-3">
-                                <button class="btn" name="save_event" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
-                            </div>
                             <div class="mt-4">
                                 <div class="mt-2" style="display: flex; justify-content: flex-end;">
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addevent" style="background-color: #524340; color: #FFFFFF; margin-right: 5px;">เพิ่มกิจกรรม</button>
-                                    <button type="submit" class="btn" onclick="return confirm('ต้องการลบกิจกรรมทั้งหมดใช่หรือไม่?');" name="delete_all" style="background-color: #DB4834; color: #FFFFFF;">ลบทั้งหมด</button>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addproduct" style="background-color: #522206; color: #FFFFFF; margin-right: 5px;">เพิ่มผลิตภัณฑ์</button>
+                                    <button type="submit" class="btn" onclick="return confirm('ต้องการลบกิจกรรมทั้งหมดใช่หรือไม่?');" name="delete_all" style="background-color: #dd250c; color: #FFFFFF;">ลบทั้งหมด</button>
                                 </div>
                                 <div class="table-responsive mt-3">
                                     <table class="table">
@@ -407,31 +328,31 @@ $row_event = $event->fetchAll();
                                             <tr align="center">
                                                 <th scope="col"><input type="checkbox" class="form-check-input checkbox-select" id="select_all"></th>
                                                 <th scope="col">ภาพหน้าปก</th>
-                                                <th scope="col">ชื่อเรื่อง</th>
+                                                <th scope="col">เนื้อหา</th>
                                                 <th scope="col">สถานะ</th>
                                                 <th scope="col">จัดการ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            foreach (array_reverse($row_event) as $row_event) { ?>
+                                            foreach (array_reverse($row_product) as $row_product) { ?>
                                                 <tr align="center">
-                                                    <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_event['id'] ?>></td>
-                                                    <td width="20%"> <img width="80%" src="uploads/upload_event/<?php echo $row_event['cover_img']; ?>" alt=""></td>
-                                                    <td><?php echo $row_event['topic'] ?></td>
-                                                    <td> <a type="input" class="btn" <?php if ($row_event['status'] == "on") {
+                                                    <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_product['id_product'] ?>></td>
+                                                    <td width="20%"> <img width="60%" src="uploads/upload_product/<?php echo $row_product['img_cover']; ?>" alt=""></td>
+                                                    <td align="left" width="50%"><?php echo $row_product['product_name']; ?><?php echo $row_product['content']; ?></td>
+                                                    <td> <a type="input" class="btn" <?php if ($row_product['status'] == "on") {
                                                                                             echo " style='background-color: #06c258; color: #FFF;'";
                                                                                         } else {
-                                                                                            echo " style='background-color: #DB4834 ;color: #FFF;'";
-                                                                                        } ?> data-bs-toggle="modal" href="#status<?php echo $row_event['id'] ?>" id="setting"><i class="bi bi-gear"></i></a></td>
+                                                                                            echo " style='background-color: #dd250c ;color: #FFF;'";
+                                                                                        } ?> data-bs-toggle="modal" href="#status<?php echo $row_product['id_product'] ?>" id="setting"><i class="bi bi-gear"></i></a></td>
                                                     <td>
-                                                        <a type="input" class="btn" data-bs-toggle="modal" href="#editevent<?php echo $row_event['id'] ?>" style="background-color:#ffc107; color: #FFFFFF;"><i class="bi bi-pencil-square"></i></a>
-                                                        <button class="btn" onclick="return confirm('ต้องการลบกิจกรรมนี้ใช่หรือไม่?');" name="delete_all" style="background-color:#DB4834; color: #FFFFFF;"><i class="bi bi-trash"></i></button>
+                                                        <a type="input" class="btn" data-bs-toggle="modal" href="#editproduct<?php echo $row_product['id_product'] ?>" style="background-color:#ffc107; color: #FFFFFF;"><i class="bi bi-pencil-square"></i></a>
+                                                        <button class="btn" onclick="return confirm('ต้องการลบกิจกรรมนี้ใช่หรือไม่?');" name="delete_all" style="background-color:#dd250c; color: #FFFFFF;"><i class="bi bi-trash"></i></button>
                                                     </td>
                                                 </tr>
 
                                                 <!-- Modal Status -->
-                                                <div class="modal fade" id="status<?php echo $row_event['id'] ?>" data-bs-backdrop="static" aria-hidden="true">
+                                                <div class="modal fade" id="status<?php echo $row_product['id_product'] ?>" data-bs-backdrop="static" aria-hidden="true">
                                                     <div class="modal-dialog  modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
@@ -443,8 +364,8 @@ $row_event = $event->fetchAll();
                                                                     <form method="post">
                                                                         <div class="switch-box">
                                                                             <span>OFF</span>
-                                                                            <input type="hidden" name="event_id" value="<?php echo $row_event['id']; ?>">
-                                                                            <input class="form-check-input" id="switch-check" name="check" type="checkbox" <?php if ($row_event['status'] == "on") {
+                                                                            <input type="hidden" name="product_id" value="<?php echo $row_product['id_product']; ?>">
+                                                                            <input class="form-check-input" id="switch-check" name="check" type="checkbox" <?php if ($row_product['status'] == "on") {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             } else {
                                                                                                                                                                 echo "";
@@ -462,47 +383,55 @@ $row_event = $event->fetchAll();
                                                     </div>
                                                 </div>
 
-                                                <!-- Modal Edit event  -->
-                                                <div class="modal fade" id="editevent<?php echo $row_event['id'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <!-- Modal Edit product  -->
+                                                <div class="modal fade" id="editproduct<?php echo $row_product['id_product'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">แก้ไขกิจกรรมภาษาอังกฤษ</h1>
+                                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">แก้ไขข่าวสาร (TH)</h1>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form method="post" enctype="multipart/form-data">
-                                                                  
-                                                                        <h6 id="upload-img">ภาพหน้าปก</h6>
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                <input type="hidden" name="event_id" value="<?php echo $row_event['id']; ?>">
-                                                                                <input type="file" name="img_cover" id="imgInput" class="form-control">
-                                                                                <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 800 x 600</span>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div id="gallery d-flex justify-content-center align-item-center">
-                                                                                    <img width="80%" id="previewImg" src="uploads/upload_event/<?php echo $row_event['cover_img'] ?>">
-                                                                                </div>
+
+                                                                    <h6 id="upload-img">ภาพหน้าปก</h6>
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <input type="hidden" name="product_id" value="<?php echo $row_product['id_product']; ?>">
+                                                                            <input type="file" name="img_cover" id="imgInput" class="form-control">
+
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div id="gallery d-flex justify-content-center align-item-center">
+                                                                                <img width="80%" id="previewImg" src="uploads/upload_product/<?php echo $row_product['img_cover'] ?>">
                                                                             </div>
                                                                         </div>
-                                                                 
+                                                                    </div>
+
                                                                     <div class="row">
                                                                         <div class="col-md-12 mt-2">
-                                                                            <span>หัวเรื่อง</span>
-                                                                            <input type="text" name="topic" value="<?php echo $row_event['topic'] ?>" class="form-control">
+                                                                            <h6>ชื่อผลิตภัณฑ์</h6>
+                                                                            <textarea name="product_name"><?php echo $row_product['product_name'] ?></textarea>
                                                                         </div>
                                                                         <div class="col-md-12 mt-2">
-                                                                            <span>เนื้อหาเกริ่น <span style="color: #DB4834;">(ไม่ควรยาวเกินไป)</span></span>
-                                                                            <textarea name="content"><?php echo $row_event['content'] ?></textarea>
+                                                                            <h6>เนื้อหา </h6>
+                                                                            <textarea name="content"><?php echo $row_product['content'] ?></textarea>
                                                                         </div>
                                                                         <div class="col-md-12 mt-2">
-                                                                            <span>ลิงค์ <span style="color: #DB4834;">(สำหรับไปที่โพสต์กิจกรรม)</span></span>
-                                                                            <input type="text" name="link" value="<?php echo $row_event['link'] ?>" class="form-control">
+                                                                            <h6>รายละเอียด </h6>
+                                                                            <textarea name="detail"><?php echo $row_product['detail'] ?></textarea>
+                                                                        </div>
+                                                                        <div class="col-md-12 mt-2">
+                                                                            <h6>Link Video</h6>
+                                                                            <input type="text" name="link_video" value="<?php echo $row_product['link_video']; ?>" class="form-control">
+                                                                        </div>
+                                                                        <div class="col-md-12 mt-2">
+                                                                            <h6>Link catalog</h6>
+                                                                            <input type="text" name="link_catalog" value="<?php echo $row_product['link_catalog']; ?>" class="form-control">
                                                                         </div>
                                                                     </div>
                                                                     <div class="mt-3">
-                                                                        <button class="btn" name="edit_event" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                                                        <button class="btn" name="edit_product" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -524,14 +453,14 @@ $row_event = $event->fetchAll();
                                     <li <?php if ($page == 1) {
                                             echo "class='page-item disabled'";
                                         }  ?>>
-                                        <a class="page-link" href="event?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
+                                        <a class="page-link" href="product?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
                                     </li>
 
                                     <?php
                                     for ($i = 1; $i <= $total_page; $i++) { ?>
                                         <li <?php if ($page == $i) {
                                                 echo "class='page-item active'";
-                                            } ?>><a class="page-link" href="event?page=<?php echo $i ?>"><?php echo $i ?></a></li>
+                                            } ?>><a class="page-link" href="product?page=<?php echo $i ?>"><?php echo $i ?></a></li>
                                     <?php   }
                                     ?>
 
@@ -539,7 +468,7 @@ $row_event = $event->fetchAll();
                                     <li <?php if ($page == $total_page) {
                                             echo "class='page-item disabled'";
                                         } ?>>
-                                        <a class="page-link" href="event?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
+                                        <a class="page-link" href="product?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
                                     </li>
                                 </ul>
                             </div>
@@ -549,46 +478,54 @@ $row_event = $event->fetchAll();
 
                     </div>
 
-                    <!-- Modal Add event  -->
-                    <div class="modal fade" id="addevent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <!-- Modal Add product  -->
+                    <div class="modal fade" id="addproduct" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มกิจกรรมภาษาอังกฤษ</h1>
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มผลิตภัณฑ์ (TH)</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form method="post" enctype="multipart/form-data">
-                                        
-                                            <h6 id="upload-img">ภาพหน้าปก</h6>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <input type="file" name="img_cover" id="imgInput_add" class="form-control">
-                                                    <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 800 x 600</span>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div id="gallery d-flex justify-content-center align-item-center">
-                                                        <img width="80%" id="previewImg_add">
-                                                    </div>
+
+                                        <h6 id="upload-img">ภาพหน้าปก</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="file" name="img_cover" id="imgInput_add" class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div id="gallery d-flex justify-content-center align-item-center">
+                                                    <img width="80%" id="previewImg_add">
                                                 </div>
                                             </div>
-                                  
+                                        </div>
+
                                         <div class="row">
                                             <div class="col-md-12 mt-2">
-                                                <span>หัวเรื่อง</span>
-                                                <input type="text" name="topic" class="form-control">
+                                                <h6>ชื่อผลิตภัณฑ์</h6>
+                                                <textarea name="product_name"></textarea>
                                             </div>
                                             <div class="col-md-12 mt-2">
-                                                <span>เนื้อหาเกริ่น <span style="color: #DB4834;">(ไม่ควรยาวเกินไป)</span></span>
+                                                <h6>เนื้อหา</h6>
                                                 <textarea name="content"></textarea>
                                             </div>
                                             <div class="col-md-12 mt-2">
-                                                <span>ลิงค์ <span style="color: #DB4834;">(สำหรับไปที่โพสต์กิจกรรม)</span></span>
-                                                <input type="text" name="link" class="form-control">
+                                                <h6>รายละเอียด</h6>
+                                                <textarea name="detail"></textarea>
                                             </div>
+                                            <div class="col-md-12 mt-2">
+                                                <h6>Link video</h6>
+                                                <input type="text" name="link_video" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <h6>Link catalog</h6>
+                                                <input type="text" name="link_catalog" class="form-control">
+                                            </div>
+
                                         </div>
                                         <div class="mt-3">
-                                            <button class="btn" name="add_event" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                            <button class="btn" name="add_product" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
                                         </div>
                                     </form>
                                 </div>

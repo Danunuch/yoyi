@@ -2,43 +2,78 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
-error_reporting(0);
+//error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
     echo "<script>alert('Please Login')</script>";
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
-
-//update about
-if (isset($_POST['save_about'])) {
+if (isset($_POST['save_content'])) {
     $content = $_POST['content'];
-    $facebook = $_POST['facebook'];
-    $line = $_POST['line'];
-    $instragram = $_POST['instragram'];
-    
-    $update_about = $conn->prepare("UPDATE about_en SET content = :content, facebook = :facebook, line = :line, instragram = :instragram");
-    $update_about->bindParam(":content", $content);
-    $update_about->bindParam(":facebook", $facebook);
-    $update_about->bindParam(":line", $line);
-    $update_about->bindParam(":instragram", $instragram);
-    $update_about->execute();
+    $img = $_FILES['img'];
 
-    if ($update_about) {
-        echo "<script>
-        $(document).ready(function() {
-            Swal.fire({
-                text: 'บันทึกสำเร็จ',
-                icon: 'success',
-                timer: 10000,
-                showConfirmButton: false
-            });
-        })
-        </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+    $allow = array('jpg', 'jpeg', 'png', 'webp');
+    $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    $fileNew1 = rand() . "." . "webp";
+    $filePath1 = "uploads/upload_about/" . $fileNew1;
+
+
+    if (in_array($fileActExt1, $allow)) {
+        if ($img['size'] > 0 && $img['error'] == 0) {
+            if (move_uploaded_file($img['tmp_name'], $filePath1)) {
+                $update_about = $conn->prepare("UPDATE about_en SET content = :content, img = :img");
+                $update_about->bindParam(":content", $content);
+                $update_about->bindParam(":img", $fileNew1);
+                $update_about->execute();
+                if ($update_about) {
+                    echo "<script>
+                    $(document).ready(function() {
+                        Swal.fire({
+                            text: 'แก้ไขข้อมูลสำเร็จ',
+                            icon: 'success',
+                            timer: 10000,
+                            showConfirmButton: false
+                        });
+                    })
+                    </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+                } else {
+                    echo "<script>
+                        $(document).ready(function() {
+                            Swal.fire({
+                                text: 'มีบางอย่างผิดพลาด',
+                                icon: 'error',
+                                timer: 10000,
+                                showConfirmButton: false
+                            });
+                        })
+                        </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+                }
+            }
+        }
     } else {
-        echo "<script>
+        $update_about = $conn->prepare("UPDATE about_en SET content = :content");
+        $update_about->bindParam(":content", $content);
+        $update_about->execute();
+
+        if ($update_about) {
+            echo "<script>
+            $(document).ready(function() {
+                Swal.fire({
+                    text: 'แก้ไขข้อมูลสำเร็จ',
+                    icon: 'success',
+                    timer: 10000,
+                    showConfirmButton: false
+                });
+            })
+            </script>";
+            echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+        } else {
+            echo "<script>
         $(document).ready(function() {
             Swal.fire({
                 text: 'มีบางอย่างผิดพลาด',
@@ -48,15 +83,16 @@ if (isset($_POST['save_about'])) {
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=about_en'>";
+        }
     }
 }
 
 
-//query about
-$about = $conn->prepare("SELECT * FROM about_en");
-$about->execute();
-$row_about = $about->fetch(PDO::FETCH_ASSOC);
+//query content_about
+$content_about = $conn->prepare("SELECT * FROM about_en");
+$content_about->execute();
+$row_about = $content_about->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -65,12 +101,11 @@ $row_about = $about->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TONSAKCORNER</title>
+    <title>Yo Yi Foods Co., Ltd.</title>
 
-    <link rel="stylesheet" href="assets/css/main/app.css">
+    <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
-    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,98 +131,47 @@ $row_about = $about->fetch(PDO::FETCH_ASSOC);
             <section class="section">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">จัดการเกี่ยวกับเรา</h4>
+                        <h4 class="card-title">เนื้อหาเกี่ยวกับเรา</h4>
                         <div class="btn-lang">
-                            <a href="about" style="background-color: #DB4834; color: #FFFFFF;" class="btn">TH</a>
+                            <a href="about" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
-                        <script>
-                            const image_upload_handler_callback = (blobInfo, progress) => new Promise((resolve, reject) => {
-                                const xhr = new XMLHttpRequest();
-                                xhr.withCredentials = false;
-                                xhr.open('POST', 'upload.php');
 
-                                xhr.upload.onprogress = (e) => {
-                                    progress(e.loaded / e.total * 100);
-                                };
-
-                                xhr.onload = () => {
-                                    if (xhr.status === 403) {
-                                        reject({
-                                            message: 'HTTP Error: ' + xhr.status,
-                                            remove: true
-                                        });
-                                        return;
-                                    }
-
-                                    if (xhr.status < 200 || xhr.status >= 300) {
-                                        reject('HTTP Error: ' + xhr.status);
-                                        return;
-                                    }
-
-                                    const json = JSON.parse(xhr.responseText);
-
-                                    if (!json || typeof json.location != 'string') {
-                                        reject('Invalid JSON: ' + xhr.responseText);
-                                        return;
-                                    }
-
-                                    resolve(json.location);
-                                };
-
-                                xhr.onerror = () => {
-                                    reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-                                };
-
-                                const formData = new FormData();
-                                formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-                                xhr.send(formData);
-                            });
-                            tinymce.init({
-                                selector: 'textarea',
-                                plugins: 'autolink  code  image  lists table   wordcount',
-                                toolbar: ' blocks fontfamily fontsize code | bold italic underline strikethrough |  image table  mergetags | addcomment showcomments  | align lineheight | checklist numlist bullist indent outdent | removeformat',
-                                images_upload_url: 'upload.php',
-                                branding: false,
-                                promotion: false,
-                                height: 600
-                            });
-                        </script>
 
                     </div>
                     <div class="card-body">
-                        <form method="post">
-                            <div class="mt-3">
-                                <h6>เนื้อหาภาษาอังกฤษ</h6>
-                                <textarea name="content"><?php echo $row_about['content'] ?></textarea>
-                            </div>
-                            <div class="mt-3">
+                        <form method="post" enctype="multipart/form-data">
+                            <textarea name="content"><?php echo $row_about['content'] ?></textarea>
+                            <div class="col-md-12">
+                            <br><h6>Image</h6>
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <h6>ลิงค์ Facebook</h6>
-                                        <input type="text" name="facebook" value="<?php echo $row_about['facebook'] ?>" class="form-control">
+                                    <div class="col-md-6">
+                                        <input type="file" name="img" id="imgInput" class="form-control">
                                     </div>
-                                    <div class="col-md-4">
-                                        <h6>ลิงค์ Line</h6>
-                                        <input type="text" name="line" value="<?php echo $row_about['line'] ?>" class="form-control">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6>ลิงค์ Instragram</h6>
-                                        <input type="text" name="instragram" value="<?php echo $row_about['instragram'] ?>" class="form-control">
+                                    <div class="col-md-6">
+                                        <div id="gallery d-flex justify-content-center align-item-center">
+                                            <img width="100%" id="previewImg" src="uploads/upload_about/<?php echo $row_about['img'] ?>">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="mt-3">
-                                <button class="btn" name="save_about" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                <button class="btn" name="save_content" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
                             </div>
                         </form>
-
-
                     </div>
                 </div>
-
-
-
+                <script>
+                    tinymce.init({
+                        selector: 'textarea',
+                        plugins: 'autolink  code  image  lists table   wordcount',
+                        toolbar: ' blocks fontfamily fontsize code | bold italic underline strikethrough |  image table  mergetags | addcomment showcomments  | align lineheight | checklist numlist bullist indent outdent | removeformat',
+                        images_upload_url: 'upload.php',
+                        branding: false,
+                        promotion: false,
+                        height: 300
+                    });
+                </script>
             </section>
             <?php include('footer.php'); ?>
         </div>
@@ -195,8 +179,8 @@ $row_about = $about->fetch(PDO::FETCH_ASSOC);
     <script>
         let imgInput1 = document.getElementById('imgInput');
         let previewImg = document.getElementById('previewImg');
-        let imgInput_edit = document.getElementById('imgInput-edit');
-        let previewImg_edit = document.getElementById('previewImg-edit');
+        let imgInput_edit = document.getElementById('imgInput1');
+        let previewImg_edit = document.getElementById('previewImg1');
 
         imgInput1.onchange = evt => {
             const [file] = imgInput1.files;

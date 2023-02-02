@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -10,30 +10,25 @@ if (!isset($_SESSION['admin_login'])) {
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
-//add event
-if (isset($_POST['add_event'])) {
+//add news
+if (isset($_POST['add_news'])) {
     $img_cover = $_FILES['img_cover'];
     $content = $_POST['content'];
-    $link = $_POST['link'];
     $status = "on";
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
     $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+    $filePath1 = "uploads/upload_news/" . $fileNew1;
 
-    if (empty($link)) {
-        echo "<script>alert('กรุณากรอกลิงค์สำหรับไปที่โพสต์')</script>";
-    } else {
         try {
             if (in_array($fileActExt1, $allow)) {
                 if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
                     if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                        $add_news = $conn->prepare("INSERT INTO news(cover_img,content,link,status) VALUES(:cover_img, :content, :link, :status)");
-                        $add_news->bindParam(":cover_img", $fileNew1);
+                        $add_news = $conn->prepare("INSERT INTO news(img_cover, content, status) VALUES(:img_cover, :content, :status)");
+                        $add_news->bindParam(":img_cover", $fileNew1);
                         $add_news->bindParam(":content", $content);
-                        $add_news->bindParam(":link", $link);
                         $add_news->bindParam(":status", $status);
                         $add_news->execute();
 
@@ -69,28 +64,26 @@ if (isset($_POST['add_event'])) {
             echo $e->getMessage();
         }
     }
-}
 
-//edit event
-if (isset($_POST['edit_event'])) {
-    $news_id = $_POST['event_id'];
+
+//edit news
+if (isset($_POST['edit_news'])) {
+    $news_id = $_POST['news_id'];
     $img_cover = $_FILES['img_cover'];
     $content = $_POST['content'];
-    $link = $_POST['link'];
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
     $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
     $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_event/" . $fileNew1;
+    $filePath1 = "uploads/upload_news/" . $fileNew1;
 
     if (in_array($fileActExt1, $allow)) {
         if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
             if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                $edit_news = $conn->prepare("UPDATE news SET cover_img = :cover_img, content = :content,link = :link WHERE id = :id");
-                $edit_news->bindParam(":cover_img", $fileNew1);
+                $edit_news = $conn->prepare("UPDATE news SET img_cover = :img_cover, content = :content WHERE id_news = :id");
+                $edit_news->bindParam(":img_cover", $fileNew1);
                 $edit_news->bindParam(":content", $content);
-                $edit_news->bindParam(":link", $link);
                 $edit_news->bindParam(":id", $news_id);
                 $edit_news->execute();
 
@@ -122,9 +115,8 @@ if (isset($_POST['edit_event'])) {
             }
         }
     } else {
-        $edit_news = $conn->prepare("UPDATE news SET  content = :content,link = :link WHERE id = :id");
+        $edit_news = $conn->prepare("UPDATE news SET content = :content WHERE id_news = :id");
         $edit_news->bindParam(":content", $content);
-        $edit_news->bindParam(":link", $link);
         $edit_news->bindParam(":id", $news_id);
         $edit_news->execute();
 
@@ -157,14 +149,13 @@ if (isset($_POST['edit_event'])) {
 }
 
 //change status
-
 if (isset($_POST['change-status'])) {
     $check = $_POST['check'];
-    $event_id = $_POST['event_id'];
+    $news_id = $_POST['news_id'];
 
-    $stmt = $conn->prepare("UPDATE news SET status = :status WHERE id =  :id");
+    $stmt = $conn->prepare("UPDATE news SET status = :status WHERE id_news =  :id_news");
     $stmt->bindParam(":status", $check);
-    $stmt->bindParam(":id", $event_id);
+    $stmt->bindParam(":id_news", $news_id);
     $stmt->execute();
 
     if ($stmt) {
@@ -186,15 +177,15 @@ if (isset($_POST['change-status'])) {
 }
 
 
-//delete event all
+//delete news all
 if (isset($_POST['delete_all'])) {
     if (count((array)$_POST['ids']) > 0) {
         $all = implode(",", $_POST['ids']);
 
-        $del_event = $conn->prepare("DELETE FROM news WHERE id in ($all)");
-        $del_event->execute();
+        $del_news = $conn->prepare("DELETE FROM news WHERE id_news in ($all)");
+        $del_news->execute();
 
-        if ($del_event) {
+        if ($del_news) {
             echo "<script>
             $(document).ready(function() {
                 Swal.fire({
@@ -205,7 +196,7 @@ if (isset($_POST['delete_all'])) {
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=news'>";
+            echo "<meta http-equiv='refresh' content='1.6;url=news'>";
         } else {
             echo "<script>alert('Something Went Wrong!!!')</script>";
             echo "<meta http-equiv='refresh' content='1.5;url=news'>";
@@ -214,17 +205,16 @@ if (isset($_POST['delete_all'])) {
         echo "<script>
         $(document).ready(function() {
             Swal.fire({
-                text: 'ต้องคลิกเลือกข่าวสารก่อนทำการลบ',
+                text: 'กรุณาคลิกเลือกข่าวสารก่อนทำการลบ',
                 icon: 'warning',
                 timer: 10000,
                 showConfirmButton: false
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=news'>";
+        echo "<meta http-equiv='refresh' content='1.6;url=news'>";
     }
 }
-
 
 
 
@@ -249,16 +239,14 @@ $row_news = $news->fetchAll();
 
 
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TONSAKCORNER</title>
+    <title>Yo Yi Foods Co., Ltd.</title>
 
     <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
-    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -286,51 +274,9 @@ $row_news = $news->fetchAll();
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">ข่าวสาร</h4>
                         <div class="btn-lang">
-                            <a href="news_en" style="background-color: #DB4834; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="news_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
                         </div>
                         <script>
-                            const image_upload_handler_callback = (blobInfo, progress) => new Promise((resolve, reject) => {
-                                const xhr = new XMLHttpRequest();
-                                xhr.withCredentials = false;
-                                xhr.open('POST', 'upload.php');
-
-                                xhr.upload.onprogress = (e) => {
-                                    progress(e.loaded / e.total * 100);
-                                };
-
-                                xhr.onload = () => {
-                                    if (xhr.status === 403) {
-                                        reject({
-                                            message: 'HTTP Error: ' + xhr.status,
-                                            remove: true
-                                        });
-                                        return;
-                                    }
-
-                                    if (xhr.status < 200 || xhr.status >= 300) {
-                                        reject('HTTP Error: ' + xhr.status);
-                                        return;
-                                    }
-
-                                    const json = JSON.parse(xhr.responseText);
-
-                                    if (!json || typeof json.location != 'string') {
-                                        reject('Invalid JSON: ' + xhr.responseText);
-                                        return;
-                                    }
-
-                                    resolve(json.location);
-                                };
-
-                                xhr.onerror = () => {
-                                    reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-                                };
-
-                                const formData = new FormData();
-                                formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-                                xhr.send(formData);
-                            });
                             tinymce.init({
                                 selector: 'textarea',
                                 plugins: 'autolink  code  image  lists table   wordcount',
@@ -347,8 +293,8 @@ $row_news = $news->fetchAll();
                         <form method="post">
                             <div class="mt-4">
                                 <div class="mt-2" style="display: flex; justify-content: flex-end;">
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addevent" style="background-color: #524340; color: #FFFFFF; margin-right: 5px;">เพิ่มข่าวสาร</button>
-                                    <button type="submit" class="btn" onclick="return confirm('ต้องการลบกิจกรรมทั้งหมดใช่หรือไม่?');" name="delete_all" style="background-color: #DB4834; color: #FFFFFF;">ลบทั้งหมด</button>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addnews" style="background-color: #522206; color: #FFFFFF; margin-right: 5px;">เพิ่มข่าวสาร</button>
+                                    <button type="submit" class="btn" onclick="return confirm('ต้องการลบกิจกรรมทั้งหมดใช่หรือไม่?');" name="delete_all" style="background-color: #dd250c; color: #FFFFFF;">ลบทั้งหมด</button>
                                 </div>
                                 <div class="table-responsive mt-3">
                                     <table class="table">
@@ -356,6 +302,7 @@ $row_news = $news->fetchAll();
                                             <tr align="center">
                                                 <th scope="col"><input type="checkbox" class="form-check-input checkbox-select" id="select_all"></th>
                                                 <th scope="col">ภาพหน้าปก</th>
+                                                <th scope="col">เนื้อหา</th>
                                                 <th scope="col">สถานะ</th>
                                                 <th scope="col">จัดการ</th>
                                             </tr>
@@ -364,21 +311,22 @@ $row_news = $news->fetchAll();
                                             <?php
                                             foreach (array_reverse($row_news) as $row_news) { ?>
                                                 <tr align="center">
-                                                    <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_news['id'] ?>></td>
-                                                    <td width="20%"> <img width="80%" src="uploads/upload_event/<?php echo $row_news['cover_img']; ?>" alt=""></td>
+                                                    <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_news['id_news'] ?>></td>
+                                                    <td width="20%"> <img width="60%" src="uploads/upload_news/<?php echo $row_news['img_cover']; ?>" alt=""></td>
+                                                    <td align="left" width="50%"><?php echo $row_news['content']; ?></td>
                                                     <td> <a type="input" class="btn" <?php if ($row_news['status'] == "on") {
                                                                                             echo " style='background-color: #06c258; color: #FFF;'";
                                                                                         } else {
-                                                                                            echo " style='background-color: #DB4834 ;color: #FFF;'";
-                                                                                        } ?> data-bs-toggle="modal" href="#status<?php echo $row_news['id'] ?>" id="setting"><i class="bi bi-gear"></i></a></td>
+                                                                                            echo " style='background-color: #dd250c ;color: #FFF;'";
+                                                                                        } ?> data-bs-toggle="modal" href="#status<?php echo $row_news['id_news'] ?>" id="setting"><i class="bi bi-gear"></i></a></td>
                                                     <td>
-                                                        <a type="input" class="btn" data-bs-toggle="modal" href="#editevent<?php echo $row_news['id'] ?>" style="background-color:#ffc107; color: #FFFFFF;"><i class="bi bi-pencil-square"></i></a>
-                                                        <button class="btn" onclick="return confirm('ต้องการลบกิจกรรมนี้ใช่หรือไม่?');" name="delete_all" style="background-color:#DB4834; color: #FFFFFF;"><i class="bi bi-trash"></i></button>
+                                                        <a type="input" class="btn" data-bs-toggle="modal" href="#editnews<?php echo $row_news['id_news'] ?>" style="background-color:#ffc107; color: #FFFFFF;"><i class="bi bi-pencil-square"></i></a>
+                                                        <button class="btn" onclick="return confirm('ต้องการลบกิจกรรมนี้ใช่หรือไม่?');" name="delete_all" style="background-color:#dd250c; color: #FFFFFF;"><i class="bi bi-trash"></i></button>
                                                     </td>
                                                 </tr>
 
                                                 <!-- Modal Status -->
-                                                <div class="modal fade" id="status<?php echo $row_news['id'] ?>" data-bs-backdrop="static" aria-hidden="true">
+                                                <div class="modal fade" id="status<?php echo $row_news['id_news'] ?>" data-bs-backdrop="static" aria-hidden="true">
                                                     <div class="modal-dialog  modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
@@ -390,7 +338,7 @@ $row_news = $news->fetchAll();
                                                                     <form method="post">
                                                                         <div class="switch-box">
                                                                             <span>OFF</span>
-                                                                            <input type="hidden" name="event_id" value="<?php echo $row_news['id']; ?>">
+                                                                            <input type="hidden" name="news_id" value="<?php echo $row_news['id_news']; ?>">
                                                                             <input class="form-check-input" id="switch-check" name="check" type="checkbox" <?php if ($row_news['status'] == "on") {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             } else {
@@ -409,12 +357,12 @@ $row_news = $news->fetchAll();
                                                     </div>
                                                 </div>
 
-                                                <!-- Modal Edit event  -->
-                                                <div class="modal fade" id="editevent<?php echo $row_news['id'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <!-- Modal Edit news  -->
+                                                <div class="modal fade" id="editnews<?php echo $row_news['id_news'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">แก้ไขข่าวสารภาษาไทย</h1>
+                                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">แก้ไขข่าวสาร (TH)</h1>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
@@ -423,29 +371,26 @@ $row_news = $news->fetchAll();
                                                                         <h6 id="upload-img">ภาพหน้าปก</h6>
                                                                         <div class="row">
                                                                             <div class="col-md-6">
-                                                                                <input type="hidden" name="event_id" value="<?php echo $row_news['id']; ?>">
+                                                                                <input type="hidden" name="news_id" value="<?php echo $row_news['id_news']; ?>">
                                                                                 <input type="file" name="img_cover" id="imgInput" class="form-control">
-                                                                                <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 800 x 600</span>
+                                                                               
                                                                             </div>
                                                                             <div class="col-md-6">
                                                                                 <div id="gallery d-flex justify-content-center align-item-center">
-                                                                                    <img width="80%" id="previewImg" src="uploads/upload_event/<?php echo $row_news['cover_img'] ?>">
+                                                                                    <img width="80%" id="previewImg" src="uploads/upload_news/<?php echo $row_news['img_cover'] ?>">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                   
                                                                     <div class="row">
                                                                         <div class="col-md-12 mt-2">
-                                                                            <span>เนื้อหาเกริ่น <span style="color: #DB4834;">(ไม่ควรยาวเกินไป)</span></span>
+                                                                            <span>เนื้อหา </span>
                                                                             <textarea name="content"><?php echo $row_news['content'] ?></textarea>
                                                                         </div>
-                                                                        <div class="col-md-12 mt-2">
-                                                                            <span>ลิงค์ <span style="color: #DB4834;">(สำหรับไปที่โพสต์กิจกรรม)</span></span>
-                                                                            <input type="text" name="link" value="<?php echo $row_news['link'] ?>" class="form-control">
-                                                                        </div>
+                                                        
                                                                     </div>
                                                                     <div class="mt-3">
-                                                                        <button class="btn" name="edit_event" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                                                        <button class="btn" name="edit_news" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -467,14 +412,14 @@ $row_news = $news->fetchAll();
                                     <li <?php if ($page == 1) {
                                             echo "class='page-item disabled'";
                                         }  ?>>
-                                        <a class="page-link" href="event?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
+                                        <a class="page-link" href="news?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
                                     </li>
 
                                     <?php
                                     for ($i = 1; $i <= $total_page; $i++) { ?>
                                         <li <?php if ($page == $i) {
                                                 echo "class='page-item active'";
-                                            } ?>><a class="page-link" href="event?page=<?php echo $i ?>"><?php echo $i ?></a></li>
+                                            } ?>><a class="page-link" href="news?page=<?php echo $i ?>"><?php echo $i ?></a></li>
                                     <?php   }
                                     ?>
 
@@ -482,7 +427,7 @@ $row_news = $news->fetchAll();
                                     <li <?php if ($page == $total_page) {
                                             echo "class='page-item disabled'";
                                         } ?>>
-                                        <a class="page-link" href="event?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
+                                        <a class="page-link" href="news?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
                                     </li>
                                 </ul>
                             </div>
@@ -492,12 +437,12 @@ $row_news = $news->fetchAll();
 
                     </div>
 
-                    <!-- Modal Add event  -->
-                    <div class="modal fade" id="addevent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <!-- Modal Add news  -->
+                    <div class="modal fade" id="addnews" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มข่าวสารภาษาไทย</h1>
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มข่าวสาร (TH)</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -507,7 +452,6 @@ $row_news = $news->fetchAll();
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <input type="file" name="img_cover" id="imgInput_add" class="form-control">
-                                                    <span style="color: #DB4834;">ขนาดภาพที่แนะนำ 800 x 600</span>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div id="gallery d-flex justify-content-center align-item-center">
@@ -518,16 +462,13 @@ $row_news = $news->fetchAll();
                                      
                                         <div class="row">
                                             <div class="col-md-12 mt-2">
-                                                <span>เนื้อหาเกริ่น <span style="color: #DB4834;">(ไม่ควรยาวเกินไป)</span></span>
+                                                <span>เนื้อหา</span>
                                                 <textarea name="content"></textarea>
                                             </div>
-                                            <div class="col-md-12 mt-2">
-                                                <span>ลิงค์ <span style="color: #DB4834;">(สำหรับไปที่โพสต์กิจกรรม)</span></span>
-                                                <input type="text" name="link" class="form-control">
-                                            </div>
+                
                                         </div>
                                         <div class="mt-3">
-                                            <button class="btn" name="add_event" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                            <button class="btn" name="add_news" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
                                         </div>
                                     </form>
                                 </div>

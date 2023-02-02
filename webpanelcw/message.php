@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-require_once('config/tonsak_db.php');
+require_once('config/yoyi_db.php');
 session_start();
 error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
@@ -11,11 +11,11 @@ if (!isset($_SESSION['admin_login'])) {
 }
 
 
-if(isset($_POST['delete_message'])){
+if (isset($_POST['delete_message'])) {
     $delete_message = $_POST['delete_message'];
 
     $del = $conn->prepare("DELETE FROM message WHERE id = :id");
-    $del->bindParam(":id",$delete_message);
+    $del->bindParam(":id", $delete_message);
     $del->execute();
 
     if ($del) {
@@ -95,19 +95,17 @@ $row_message = $data_message->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TONSAKCORNER</title>
+    <title>Yo Yi Foods Co., Ltd.</title>
 
     <link rel="stylesheet" href="assets/css/main/app.css?v=<?php echo time();  ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
-    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="../images/icon-logo.png" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
     <script src="tinymce/js/tinymce/tinymce.min.js"></script>
-    <link rel="shortcut icon" href="../images/logo.png" type="image/png">
+    <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
 </head>
 
 <body style="font-family: 'Kanit', sans-serif;">
@@ -137,21 +135,20 @@ $row_message = $data_message->fetchAll();
                                 <thead>
                                     <tr align="center">
                                         <th scope="col">จาก</th>
-                                        <th scope="col">เรื่อง</th>
                                         <th scope="col">อีเมล</th>
                                         <th scope="col">สถานะ</th>
-                                        <th scope="col">ข้อความ</th>
+                                        <th scope="col">จัดการ</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    <!-- Show Slide -->
 
+                                    <!-- Show Slide -->
                                     <?php
                                     foreach (array_reverse($row_message)  as $row_message) { ?>
                                         <tr align="center">
                                             <td width="20%"><?php echo $row_message['name']; ?></td>
-                                            <td width="20%"><?php echo $row_message['topic']; ?></td>
                                             <td width="20%"><?php echo $row_message['email']; ?></td>
                                             <td width="20%"><a type="input" data-bs-toggle="modal" href="#status<?php echo $row_message['id'] ?>" class="btn btn-gear" <?php if ($row_message['status'] == "on") {
                                                                                                                                                                             echo " style='background-color: #06c258;color:#FFF;'";
@@ -166,20 +163,20 @@ $row_message = $data_message->fetchAll();
                                             </td>
                                         </tr>
 
-                                        <!-- Modal message -->
 
+                                        <!-- Modal message -->
                                         <div class="modal fade" id="message<?php echo $row_message['id']; ?>" data-bs-backdrop="static" aria-hidden="true">
 
                                             <div class="modal-dialog  modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">ข้อความจากคุณ<?php echo $row_message['name']; ?></h1>
+                                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">ข้อความจากคุณ <?php echo $row_message['name']; ?></h1>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="form-message">
-                                                            <h6>ติดต่อกลับ : <?php echo $row_message['phone']; ?></h6>
-                                                            <h6>เนื้อหา : </h6>
+                                                            <h6>ติดต่อกลับ : <?php echo $row_message['tel']; ?></h6>
+                                                            <h6>ข้อความ : </h6>
                                                             <p><?php echo $row_message['message']; ?></p>
 
                                                         </div>
@@ -188,6 +185,7 @@ $row_message = $data_message->fetchAll();
                                                 </div>
                                             </div>
                                         </div>
+
 
                                         <!-- Modal Status -->
                                         <div class="modal fade" id="status<?php echo $row_message['id'] ?>" data-bs-backdrop="static" aria-hidden="true">
@@ -216,21 +214,15 @@ $row_message = $data_message->fetchAll();
                                                             </form>
                                                         </div>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
-
-
-                                    <?php  }
-                                    ?>
-
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
             </section>
             <?php include('footer.php'); ?>
         </div>
@@ -254,7 +246,6 @@ $row_message = $data_message->fetchAll();
             }
         }
     </script>
-
     <script>
         $(document).ready(function() {
             $('#reset').click(function() {
@@ -262,14 +253,10 @@ $row_message = $data_message->fetchAll();
                 $('#previewImg').attr("src", "");
 
             });
-
-
         });
     </script>
     <script src="assets/js/bootstrap.js"></script>
     <script src="assets/js/app.js"></script>
-
-
 
 </body>
 

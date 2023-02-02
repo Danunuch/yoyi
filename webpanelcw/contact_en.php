@@ -12,58 +12,105 @@ if (!isset($_SESSION['admin_login'])) {
 
 
 //update contact
-// if (isset($_POST['save_contact'])) {
-//     $address = $_POST['address'];
-//     $phone = $_POST['phone'];
-//     $email = $_POST['email'];
-//     $facebook = $_POST['facebook'];
-//     $line = $_POST['line'];
-//     $instragram = $_POST['instragram'];
-//     $map = $_POST['map'];
-
-//     $update_contact = $conn->prepare("UPDATE contact_en SET address = :address, phone = :phone, email = :email, facebook = :facebook, line = :line, instragram = :instragram, map = :map");
-//     $update_contact->bindParam(":address", $address);
-//     $update_contact->bindParam(":phone", $phone);
-//     $update_contact->bindParam(":email", $email);
-//     $update_contact->bindParam(":facebook", $facebook);
-//     $update_contact->bindParam(":line", $line);
-//     $update_contact->bindParam(":instragram", $instragram);
-//     $update_contact->bindParam(":map", $map);
-//     $update_contact->execute();
-
-//     if ($update_contact) {
-//         echo "<script>
-//         $(document).ready(function() {
-//             Swal.fire({
-//                 text: 'แก้ไขข้อมูลสำเร็จ',
-//                 icon: 'success',
-//                 timer: 10000,
-//                 showConfirmButton: false
-//             });
-//         })
-//         </script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
-//     } else {
-//         echo "<script>
-//         $(document).ready(function() {
-//             Swal.fire({
-//                 text: 'มีบางอย่างผิดพลาด',
-//                 icon: 'error',
-//                 timer: 10000,
-//                 showConfirmButton: false
-//             });
-//         })
-//         </script>";
-//         echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
-//     }
-// }
+if (isset($_POST['save_contact'])) {
+    $address = $_POST['address'];
+    $tel = $_POST['tel'];
+    $email = $_POST['email'];
+    $facebook = $_POST['facebook'];
+    $line = $_POST['line'];
+    $instragram = $_POST['instragram'];
+    $img_cover = $_FILES['img'];
 
 
-// //query contact
-// $contact = $conn->prepare("SELECT * FROM contact_en");
-// $contact->execute();
-// $row_contact = $contact->fetch(PDO::FETCH_ASSOC);
-// ?>
+    $allow = array('jpg', 'jpeg', 'png', 'webp');
+    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    $fileNew1 = rand() . "." . "webp";
+    $filePath1 = "uploads/upload_contact/" . $fileNew1;
+
+    if (in_array($fileActExt1, $allow)) {
+        if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+            if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                $update_contact = $conn->prepare("UPDATE contact_en SET tel = :tel, address = :address, email = :email, img = :img, instragram = :instragram, line = :line, facebook = :facebook");
+                $update_contact->bindParam(":tel", $tel);
+                $update_contact->bindParam(":address", $address);
+                $update_contact->bindParam(":email", $email);
+                $update_contact->bindParam(":img", $fileNew1);
+                $update_contact->bindParam(":instragram", $instragram);
+                $update_contact->bindParam(":line", $line);
+                $update_contact->bindParam(":facebook", $facebook);
+                $update_contact->execute();
+
+                if ($update_contact) {
+                    echo "<script>
+                $(document).ready(function() {
+                    Swal.fire({
+                        text: 'แก้ไขข้อมูลสำเร็จ',
+                        icon: 'success',
+                        timer: 10000,
+                        showConfirmButton: false
+                    });
+                })
+                </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
+                } else {
+                    echo "<script>
+                $(document).ready(function() {
+                    Swal.fire({
+                        text: 'มีบางอย่างผิดพลาด',
+                        icon: 'error',
+                        timer: 10000,
+                        showConfirmButton: false
+                    });
+                })
+                </script>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
+                }
+            }
+        }
+    } else {
+        $update_contact = $conn->prepare("UPDATE contact_en SET tel = :tel, address = :address, email = :email, instragram = :instragram, line = :line, facebook = :facebook");
+        $update_contact->bindParam(":tel", $tel);
+        $update_contact->bindParam(":address", $address);
+        $update_contact->bindParam(":email", $email);
+        $update_contact->bindParam(":instragram", $instragram);
+        $update_contact->bindParam(":line", $line);
+        $update_contact->bindParam(":facebook", $facebook);
+        $update_contact->execute();
+
+        if ($update_contact) {
+            echo "<script>
+                $(document).ready(function() {
+                    Swal.fire({
+                        text: 'แก้ไขข้อมูลสำเร็จ',
+                        icon: 'success',
+                        timer: 10000,
+                        showConfirmButton: false
+                    });
+                })
+                </script>";
+            echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
+        } else {
+            echo "<script>
+                $(document).ready(function() {
+                    Swal.fire({
+                        text: 'มีบางอย่างผิดพลาด',
+                        icon: 'error',
+                        timer: 10000,
+                        showConfirmButton: false
+                    });
+                })
+                </script>";
+            echo "<meta http-equiv='refresh' content='1.5;url=contact_en'>";
+        }
+    }
+}
+
+//query contact
+$contact = $conn->prepare("SELECT * FROM contact_en");
+$contact->execute();
+$row_contact = $contact->fetch(PDO::FETCH_ASSOC);
+?>
 
 
 <html lang="en">
@@ -71,7 +118,7 @@ if (!isset($_SESSION['admin_login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TONSAKCORNER</title>
+    <title>Yo Yi Foods Co., Ltd.</title>
 
     <link rel="stylesheet" href="assets/css/main/app.css">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
@@ -104,11 +151,11 @@ if (!isset($_SESSION['admin_login'])) {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">จัดการติดต่อเรา</h4>
                         <div class="btn-lang">
-                            <a href="contact" style="background-color: #DB4834; color: #FFFFFF;" class="btn">TH</a>
+                            <a href="contact" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             <div class="mt-3">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -117,7 +164,7 @@ if (!isset($_SESSION['admin_login'])) {
                                     </div>
                                     <div class="col-md-6">
                                         <h6>เบอร์โทรศัพท์</h6>
-                                        <input type="text" name="phone" value="<?php echo $row_contact['phone']; ?>" class="form-control">
+                                        <input type="text" name="tel" value="<?php echo $row_contact['tel']; ?>" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <h6>อีเมล</h6>
@@ -136,33 +183,35 @@ if (!isset($_SESSION['admin_login'])) {
                                         <input type="text" name="instragram" value="<?php echo $row_contact['instragram']; ?>" class="form-control">
                                     </div>
                                     <div class="col-md-12">
-                                        <h6>Google Map (Embedded)</h6>
-                                        <input type="text" name="map" value='<?php echo $row_contact['map']; ?>' class="form-control">
+                                        <h6>Image</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="file" name="img" id="imgInput" class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div id="gallery d-flex justify-content-center align-item-center">
+                                                    <img width="60%" id="previewImg" src="uploads/upload_contact/<?php echo $row_contact['img'] ?>">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-
-                            </div>
-                            <div class="mt-3">
-                                <button class="btn" name="save_contact" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
-                            </div>
+                                <div class="mt-3">
+                                    <button class="btn" name="save_contact" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
+                                </div>
                         </form>
-
-
                     </div>
                 </div>
-
-
-
             </section>
             <?php include('footer.php'); ?>
         </div>
     </div>
+
     <script>
         let imgInput1 = document.getElementById('imgInput');
         let previewImg = document.getElementById('previewImg');
-        let imgInput_edit = document.getElementById('imgInput-edit');
-        let previewImg_edit = document.getElementById('previewImg-edit');
+        let imgInput_edit = document.getElementById('imgInput1');
+        let previewImg_edit = document.getElementById('previewImg1');
 
         imgInput1.onchange = evt => {
             const [file] = imgInput1.files;
@@ -191,7 +240,6 @@ if (!isset($_SESSION['admin_login'])) {
     </script>
     <script src="assets/js/bootstrap.js"></script>
     <script src="assets/js/app.js"></script>
-
 
 
 </body>

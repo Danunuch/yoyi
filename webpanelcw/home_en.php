@@ -4,31 +4,43 @@
 <?php
 require_once('config/yoyi_db.php');
 session_start();
-//error_reporting(0);
+// error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
     echo "<script>alert('Please Login')</script>";
     echo "<meta http-equiv='refresh' content='0;url=index'>";
 }
 
 if (isset($_POST['save_content'])) {
-    $content = $_POST['content'];
-    $img = $_FILES['img'];
+    $intro = $_POST['intro'];
+    $topic = $_POST['topic'];
+    $content1 = $_POST['content1'];
+    $content2 = $_POST['content2'];
+    $content3 = $_POST['content3'];
+    $content4 = $_POST['content4'];
+    $img_cover = $_FILES['img_cover'];
 
+    // $link = $_POST['link'];
     $allow = array('jpg', 'jpeg', 'png', 'webp');
-    $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
     $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
     $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "uploads/upload_about/" . $fileNew1;
+    $filePath1 = "uploads/upload_intro/" . $fileNew1;
 
 
     if (in_array($fileActExt1, $allow)) {
-        if ($img['size'] > 0 && $img['error'] == 0) {
-            if (move_uploaded_file($img['tmp_name'], $filePath1)) {
-                $update_about = $conn->prepare("UPDATE about SET content = :content, img = :img");
-                $update_about->bindParam(":content", $content);
-                $update_about->bindParam(":img", $fileNew1);
-                $update_about->execute();
-                if ($update_about) {
+        if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+            if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                $update_home = $conn->prepare("UPDATE intro_content_en SET intro = :intro, topic = :topic, content1 = :content1, content2 = :content2 ,content3 = :content3, content4 = :content4 ,img_cover = :img_cover");
+                $update_home->bindParam(":intro", $intro);
+                $update_home->bindParam(":topic", $topic);
+                $update_home->bindParam(":content1", $content1);
+                $update_home->bindParam(":content2", $content2);
+                $update_home->bindParam(":content3", $content3);
+                $update_home->bindParam(":content4", $content4);
+                $update_home->bindParam(":img_cover", $fileNew1);
+                $update_home->execute();
+
+                if ($update_home) {
                     echo "<script>
                     $(document).ready(function() {
                         Swal.fire({
@@ -39,7 +51,7 @@ if (isset($_POST['save_content'])) {
                         });
                     })
                     </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=about'>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=home_en'>";
                 } else {
                     echo "<script>
                         $(document).ready(function() {
@@ -51,16 +63,21 @@ if (isset($_POST['save_content'])) {
                             });
                         })
                         </script>";
-                    echo "<meta http-equiv='refresh' content='1.5;url=about'>";
+                    echo "<meta http-equiv='refresh' content='1.5;url=home_en'>";
                 }
             }
         }
     } else {
-        $update_about = $conn->prepare("UPDATE about SET content = :content");
-        $update_about->bindParam(":content", $content);
-        $update_about->execute();
+        $update_home = $conn->prepare("UPDATE intro_content_en SET intro = :intro, topic = :topic, content1 = :content1, content2 = :content2 ,content3 = :content3, content4 = :content4");
+        $update_home->bindParam(":intro", $intro);
+        $update_home->bindParam(":topic", $topic);
+        $update_home->bindParam(":content1", $content1);
+        $update_home->bindParam(":content2", $content2);
+        $update_home->bindParam(":content3", $content3);
+        $update_home->bindParam(":content4", $content4);
+        $update_home->execute();
 
-        if ($update_about) {
+        if ($update_home) {
             echo "<script>
             $(document).ready(function() {
                 Swal.fire({
@@ -71,7 +88,7 @@ if (isset($_POST['save_content'])) {
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=about'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=home_en'>";
         } else {
             echo "<script>
         $(document).ready(function() {
@@ -83,16 +100,16 @@ if (isset($_POST['save_content'])) {
             });
         })
         </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=about'>";
+            echo "<meta http-equiv='refresh' content='1.5;url=home_en'>";
         }
     }
 }
 
 
-//query content_about
-$content_about = $conn->prepare("SELECT * FROM about");
-$content_about->execute();
-$row_about = $content_about->fetch(PDO::FETCH_ASSOC);
+//query content_home
+$content_home = $conn->prepare("SELECT * FROM intro_content_en");
+$content_home->execute();
+$row_content_home = $content_home->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -105,6 +122,7 @@ $row_about = $content_about->fetch(PDO::FETCH_ASSOC);
 
     <link rel="stylesheet" href="assets/css/main/app.css?v<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/main/app-dark.css">
+    <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
     <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
     <link rel="stylesheet" href="css/home.css?v=<?php echo time();  ?>">
@@ -126,34 +144,42 @@ $row_about = $content_about->fetch(PDO::FETCH_ASSOC);
             </header>
 
             <div class="page-heading">
-                <h3>เกี่ยวกับเรา</h3>
+                <h3>หน้าแรก</h3>
             </div>
             <section class="section">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">เนื้อหาเกี่ยวกับเรา</h4>
+                        <h4 class="card-title">เนื้อหาหน้าเเรก</h4>
                         <div class="btn-lang">
-                            <a href="about_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="home" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
 
 
                     </div>
                     <div class="card-body">
                         <form method="post" enctype="multipart/form-data">
-                            <textarea name="content"><?php echo $row_about['content'] ?></textarea>
+                            <textarea name="intro"><?php echo $row_content_home['intro'] ?></textarea>
+                            <br><textarea name="topic"><?php echo $row_content_home['topic'] ?></textarea>
+                            <br><textarea name="content1"><?php echo $row_content_home['content1'] ?></textarea>
+                            <br><textarea name="content2"><?php echo $row_content_home['content2'] ?></textarea>
+                            <br><textarea name="content3"><?php echo $row_content_home['content3'] ?></textarea>
+                            <br><textarea name="content4"><?php echo $row_content_home['content4'] ?></textarea>
+
                             <div class="col-md-12">
                             <br><h6>Image</h6>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="file" name="img" id="imgInput" class="form-control">
+                                        <input type="file" name="img_cover" id="imgInput" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <div id="gallery d-flex justify-content-center align-item-center">
-                                            <img width="100%" id="previewImg" src="uploads/upload_about/<?php echo $row_about['img'] ?>">
+                                            <img width="60%" id="previewImg" src="uploads/upload_intro/<?php echo $row_content_home['img_cover'] ?>">
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+
 
                             <div class="mt-3">
                                 <button class="btn" name="save_content" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
@@ -162,6 +188,7 @@ $row_about = $content_about->fetch(PDO::FETCH_ASSOC);
                     </div>
                 </div>
                 <script>
+                  
                     tinymce.init({
                         selector: 'textarea',
                         plugins: 'autolink  code  image  lists table   wordcount',
