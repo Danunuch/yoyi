@@ -66,8 +66,8 @@
                 </li>
 
 
-                <li class="sidebar-item  about " id="about">
-                    <a href="cooking" class='sidebar-link'>
+                <li class="sidebar-item  about has-sub" id="about">
+                    <a href="" class='sidebar-link'>
                         <i class="bi bi-cup-hot-fill"></i>
                         <span>Cooking Time</span>
                     </a>

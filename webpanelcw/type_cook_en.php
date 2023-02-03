@@ -12,13 +12,13 @@ if (!isset($_SESSION['admin_login'])) {
 
 
 // Query หลัก
-$data_type = $conn->prepare("SELECT * FROM type_cook");
+$data_type = $conn->prepare("SELECT * FROM type_cook_en");
 $data_type->execute();
 $row_type = $data_type->fetchAll();
 
 
 // Query ย่อย
-$data_catalog = $conn->prepare("SELECT * FROM catalog_cook");
+$data_catalog = $conn->prepare("SELECT * FROM catalog_cook_en");
 $data_catalog->execute();
 $row_catalog = $data_catalog->fetchAll();
 
@@ -28,7 +28,7 @@ if (isset($_POST['edit-type-cook'])) {
     $type_id = $_POST['type_id'];
     $type_name = $_POST['type_name'];
 
-    $edit_type = $conn->prepare("UPDATE type_cook SET type_name = :type_name WHERE type_id = :type_id");
+    $edit_type = $conn->prepare("UPDATE type_cook_en SET type_name = :type_name WHERE type_id = :type_id");
     $edit_type->bindParam(":type_name", $type_name);
     $edit_type->bindParam(":type_id", $type_id);
     $edit_type->execute();
@@ -44,7 +44,7 @@ if (isset($_POST['edit-type-cook'])) {
                         });
                     })
                     </script>";
-        echo "<meta http-equiv='refresh' content='2;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='2;url=type_cook_en'>";
     } else {
         echo "<script>
                     $(document).ready(function() {
@@ -64,7 +64,7 @@ if (isset($_POST['edit-type-cook'])) {
 if (isset($_POST['add_type'])) {
     $type_name = $_POST['type_name'];
 
-    $add_type = $conn->prepare("INSERT INTO type_cook(type_name) VALUES(:type_name)");
+    $add_type = $conn->prepare("INSERT INTO type_cook_en(type_name) VALUES(:type_name)");
     $add_type->bindParam(":type_name", $type_name);
     $add_type->execute();
 
@@ -79,7 +79,7 @@ if (isset($_POST['add_type'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=type_cook_en'>";
     } else {
         echo "<script>
                             $(document).ready(function() {
@@ -91,7 +91,7 @@ if (isset($_POST['add_type'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=type_cook_en'>";
     }
 }
 
@@ -110,7 +110,7 @@ if (isset($_POST['add_catalog'])) {
     } else if (empty($type_id)) {
         echo "<script>alert('กรุณากรอกเลือกประเภท')</script>";
     } else {
-        $add_catalog = $conn->prepare("INSERT INTO catalog_cook(catalog_name, type_id) VALUES(:catalog_name, :type_id)");
+        $add_catalog = $conn->prepare("INSERT INTO catalog_cook_en(catalog_name, type_id) VALUES(:catalog_name, :type_id)");
         $add_catalog->bindParam(":catalog_name", $catalog_name);
         $add_catalog->bindParam(":type_id", $type_id);
         $add_catalog->execute();
@@ -128,7 +128,7 @@ if (isset($_POST['add_catalog'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=type_cook_en'>";
     } else {
         echo "<script>
                             $(document).ready(function() {
@@ -140,7 +140,7 @@ if (isset($_POST['add_catalog'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='1.5;url=type_cook_en'>";
     }
 }
 
@@ -150,7 +150,7 @@ if (isset($_POST['edit-catalog-cook'])) {
     $id = $_POST['id'];
     $catalog_name = $_POST['catalog_name'];
 
-    $edit_catalog = $conn->prepare("UPDATE catalog_cook SET catalog_name = :catalog_name WHERE id = :id");
+    $edit_catalog = $conn->prepare("UPDATE catalog_cook_en SET catalog_name = :catalog_name WHERE id = :id");
     $edit_catalog->bindParam(":catalog_name", $catalog_name);
     $edit_catalog->bindParam(":id", $id);
     $edit_catalog->execute();
@@ -166,7 +166,7 @@ if (isset($_POST['edit-catalog-cook'])) {
                         });
                     })
                     </script>";
-        echo "<meta http-equiv='refresh' content='2;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='2;url=type_cook_en'>";
     } else {
         echo "<script>
                     $(document).ready(function() {
@@ -186,19 +186,19 @@ if (isset($_POST['edit-catalog-cook'])) {
 if (isset($_POST['delete_type'])) {
     $type_id = $_POST['delete_type'];
 
-    $q_type = $conn->prepare("SELECT * FROM type_cook WHERE type_id = :id");
+    $q_type = $conn->prepare("SELECT * FROM type_cook_en WHERE type_id = :id");
     $q_type->bindParam(":id", $type_id);
     $q_type->execute();
     $row_type_cook = $q_type->fetchAll();
 
     //delete main
-    $del_type_cook = $conn->prepare("DELETE FROM type_cook WHERE type_id = :id");
+    $del_type_cook = $conn->prepare("DELETE FROM type_cook_en WHERE type_id = :id");
     $del_type_cook->bindParam(":id", $type_id);
     $del_type_cook->execute();
 
     //delete catalog
     for ($i = 0; $i < count($row_type_cook); $i++) {
-        $del_in_catalog = $conn->prepare("DELETE FROM catalog_cook WHERE type_id = :type_id");
+        $del_in_catalog = $conn->prepare("DELETE FROM catalog_cook_en WHERE type_id = :type_id");
         $del_in_catalog->bindParam(":type_id", $row_type_cook[$i]['type_id']);
         $del_in_catalog->execute();
     }
@@ -214,7 +214,7 @@ if (isset($_POST['delete_type'])) {
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='2;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='2;url=type_cook_en'>";
     } else {
         echo "<script>
         $(document).ready(function() {
@@ -232,7 +232,7 @@ if (isset($_POST['delete_type'])) {
 // delete catalog cook
 if (isset($_POST['delete_catalog'])) {
     $id = $_POST['delete_catalog'];
-    $del_catalog = $conn->prepare("DELETE FROM catalog_cook WHERE id = :id");
+    $del_catalog = $conn->prepare("DELETE FROM catalog_cook_en WHERE id = :id");
     $del_catalog->bindParam(":id", $id);
     $del_catalog->execute();
 
@@ -247,7 +247,7 @@ if (isset($_POST['delete_catalog'])) {
             });
         })
         </script>";
-        echo "<meta http-equiv='refresh' content='2;url=type_cook'>";
+        echo "<meta http-equiv='refresh' content='2;url=type_cook_en'>";
     } else {
         echo "<script>
         $(document).ready(function() {
@@ -300,7 +300,7 @@ if (isset($_POST['delete_catalog'])) {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">หมวดหมู่</h4>
                         <div class="btn-lang">
-                            <a href="type_cook_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="type_cook" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -473,7 +473,7 @@ if (isset($_POST['delete_catalog'])) {
                    
                     <!-- Modal Add catalog  --> 
                     <?php
-                    $select_stmt = $conn->prepare("SELECT * FROM type_cook");
+                    $select_stmt = $conn->prepare("SELECT * FROM type_cook_en");
                     $select_stmt->execute();
                     $query =  $select_stmt->fetchAll();
 
@@ -493,7 +493,7 @@ if (isset($_POST['delete_catalog'])) {
                                                 <input type="text" name="catalog_name" class="form-control">
 
                                                 <?php
-                                                $stmt = $conn->prepare("SELECT* FROM type_cook");
+                                                $stmt = $conn->prepare("SELECT* FROM type_cook_en");
                                                 $stmt->execute();
                                                 $type_cook = $stmt->fetchAll();
 
@@ -525,8 +525,5 @@ if (isset($_POST['delete_catalog'])) {
     <script src="assets/js/bootstrap.js"></script>
     <script src="assets/js/app.js"></script>
 
-
-
 </body>
-
 </html>

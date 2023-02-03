@@ -373,7 +373,7 @@ $row_product = $product->fetchAll();
                                                                             <span>ON</span>
                                                                         </div>
                                                                         <div class="box-btn">
-                                                                            <button name="change-status" class="btn" style="background-color: #DB4834; color: #FFFFFF;" type="submit">บันทึก</button>
+                                                                            <button name="change-status" class="btn" style="background-color: #ff962d; color: #522206;" type="submit">บันทึก</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -431,7 +431,7 @@ $row_product = $product->fetchAll();
                                                                         </div>
                                                                     </div>
                                                                     <div class="mt-3">
-                                                                        <button class="btn" name="edit_product" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                                                        <button class="btn" name="edit_product" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -525,7 +525,7 @@ $row_product = $product->fetchAll();
 
                                         </div>
                                         <div class="mt-3">
-                                            <button class="btn" name="add_product" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                            <button class="btn" name="add_product" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
                                         </div>
                                     </form>
                                 </div>

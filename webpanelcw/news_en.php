@@ -13,6 +13,7 @@ if (!isset($_SESSION['admin_login'])) {
 //add news
 if (isset($_POST['add_news'])) {
     $img_cover = $_FILES['img_cover'];
+    $title = $_POST['title'];
     $content = $_POST['content'];
     $status = "on";
 
@@ -22,18 +23,19 @@ if (isset($_POST['add_news'])) {
     $fileNew1 = rand() . "." . "webp";
     $filePath1 = "uploads/upload_news/" . $fileNew1;
 
-        try {
-            if (in_array($fileActExt1, $allow)) {
-                if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
-                    if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                        $add_news = $conn->prepare("INSERT INTO news_en(img_cover, content, status) VALUES(:img_cover, :content, :status)");
-                        $add_news->bindParam(":img_cover", $fileNew1);
-                        $add_news->bindParam(":content", $content);
-                        $add_news->bindParam(":status", $status);
-                        $add_news->execute();
+    try {
+        if (in_array($fileActExt1, $allow)) {
+            if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+                if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                    $add_news = $conn->prepare("INSERT INTO news_en(img_cover, title, content, status) VALUES(:img_cover, :title,  :content, :status)");
+                    $add_news->bindParam(":img_cover", $fileNew1);
+                    $add_news->bindParam(":title", $title);
+                    $add_news->bindParam(":content", $content);
+                    $add_news->bindParam(":status", $status);
+                    $add_news->execute();
 
-                        if ($add_news) {
-                            echo "<script>
+                    if ($add_news) {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'เพิ่มข่าวสารสำเร็จ',
@@ -43,9 +45,9 @@ if (isset($_POST['add_news'])) {
                                 });
                             })
                             </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-                        } else {
-                            echo "<script>
+                        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
+                    } else {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -55,21 +57,22 @@ if (isset($_POST['add_news'])) {
                                 });
                             })
                             </script>";
-                            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-                        }
+                        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
                     }
                 }
             }
-        } catch (PDOException $e) {
-            echo $e->getMessage();
         }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
     }
+}
 
 
 //edit news
 if (isset($_POST['edit_news'])) {
     $news_id = $_POST['news_id'];
     $img_cover = $_FILES['img_cover'];
+    $title = $_POST['title'];
     $content = $_POST['content'];
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
@@ -81,8 +84,9 @@ if (isset($_POST['edit_news'])) {
     if (in_array($fileActExt1, $allow)) {
         if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
             if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
-                $edit_news = $conn->prepare("UPDATE news_en SET img_cover = :img_cover, content = :content WHERE id_news = :id");
+                $edit_news = $conn->prepare("UPDATE news_en SET img_cover = :img_cover, title = :title, content = :content WHERE id_news = :id");
                 $edit_news->bindParam(":img_cover", $fileNew1);
+                $edit_news->bindParam(":title", $title);
                 $edit_news->bindParam(":content", $content);
                 $edit_news->bindParam(":id", $news_id);
                 $edit_news->execute();
@@ -115,7 +119,8 @@ if (isset($_POST['edit_news'])) {
             }
         }
     } else {
-        $edit_news = $conn->prepare("UPDATE news_en SET content = :content WHERE id_news = :id");
+        $edit_news = $conn->prepare("UPDATE news_en SET content = :content, title = :title WHERE id_news = :id");
+        $edit_news->bindParam(":title", $title);
         $edit_news->bindParam(":content", $content);
         $edit_news->bindParam(":id", $news_id);
         $edit_news->execute();
@@ -239,6 +244,7 @@ $row_news = $news->fetchAll();
 
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -274,7 +280,7 @@ $row_news = $news->fetchAll();
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">ข่าวสาร</h4>
                         <div class="btn-lang">
-                            <a href="news" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
+                            <a href="news_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
                         </div>
                         <script>
                             tinymce.init({
@@ -284,7 +290,7 @@ $row_news = $news->fetchAll();
                                 images_upload_url: 'upload.php',
                                 branding: false,
                                 promotion: false,
-                                height: 300
+                                height: 250
                             });
                         </script>
 
@@ -313,7 +319,7 @@ $row_news = $news->fetchAll();
                                                 <tr align="center">
                                                     <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_news['id_news'] ?>></td>
                                                     <td width="20%"> <img width="60%" src="uploads/upload_news/<?php echo $row_news['img_cover']; ?>" alt=""></td>
-                                                    <td align="left" width="50%"><?php echo $row_news['content']; ?></td>
+                                                    <td align="left" width="50%"><?php echo $row_news['title']; ?><?php echo $row_news['content']; ?></td>
                                                     <td> <a type="input" class="btn" <?php if ($row_news['status'] == "on") {
                                                                                             echo " style='background-color: #06c258; color: #FFF;'";
                                                                                         } else {
@@ -347,7 +353,7 @@ $row_news = $news->fetchAll();
                                                                             <span>ON</span>
                                                                         </div>
                                                                         <div class="box-btn">
-                                                                            <button name="change-status" class="btn" style="background-color: #DB4834; color: #FFFFFF;" type="submit">บันทึก</button>
+                                                                            <button name="change-status" class="btn" style="background-color: #ff962d; color: #522206;" type="submit">บันทึก</button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -367,30 +373,32 @@ $row_news = $news->fetchAll();
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form method="post" enctype="multipart/form-data">
-                                                                    
-                                                                        <h6 id="upload-img">ภาพหน้าปก</h6>
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                <input type="hidden" name="news_id" value="<?php echo $row_news['id_news']; ?>">
-                                                                                <input type="file" name="img_cover" id="imgInput" class="form-control">
-                                                                               
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <div id="gallery d-flex justify-content-center align-item-center">
-                                                                                    <img width="80%" id="previewImg" src="uploads/upload_news/<?php echo $row_news['img_cover'] ?>">
-                                                                                </div>
+
+                                                                    <h6 id="upload-img">ภาพหน้าปก</h6>
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <input type="hidden" name="news_id" value="<?php echo $row_news['id_news']; ?>">
+                                                                            <input type="file" name="img_cover" id="imgInput" class="form-control">
+
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div id="gallery d-flex justify-content-center align-item-center">
+                                                                                <img width="80%" id="previewImg" src="uploads/upload_news/<?php echo $row_news['img_cover'] ?>">
                                                                             </div>
                                                                         </div>
-                                                                  
+                                                                    </div>
+
                                                                     <div class="row">
                                                                         <div class="col-md-12 mt-2">
+                                                                            <span>หัวข้อ </span>
+                                                                            <textarea name="title"><?php echo $row_news['title'] ?></textarea>
                                                                             <span>เนื้อหา </span>
                                                                             <textarea name="content"><?php echo $row_news['content'] ?></textarea>
                                                                         </div>
-                                                        
+
                                                                     </div>
                                                                     <div class="mt-3">
-                                                                        <button class="btn" name="edit_news" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                                                        <button class="btn" name="edit_news" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -447,28 +455,30 @@ $row_news = $news->fetchAll();
                                 </div>
                                 <div class="modal-body">
                                     <form method="post" enctype="multipart/form-data">
-                                       
-                                            <h6 id="upload-img">ภาพหน้าปก</h6>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <input type="file" name="img_cover" id="imgInput_add" class="form-control">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div id="gallery d-flex justify-content-center align-item-center">
-                                                        <img width="80%" id="previewImg_add">
-                                                    </div>
+
+                                        <h6 id="upload-img">ภาพหน้าปก</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="file" name="img_cover" id="imgInput_add" class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div id="gallery d-flex justify-content-center align-item-center">
+                                                    <img width="80%" id="previewImg_add">
                                                 </div>
                                             </div>
-                                     
+                                        </div>
+
                                         <div class="row">
                                             <div class="col-md-12 mt-2">
+                                                <span>หัวข้อ</span>
+                                                <textarea name="title"></textarea>
                                                 <span>เนื้อหา</span>
                                                 <textarea name="content"></textarea>
                                             </div>
-                
+
                                         </div>
                                         <div class="mt-3">
-                                            <button class="btn" name="add_news" type="submit" style="background-color: #DB4834; color: #FFFFFF;">บันทึก</button>
+                                            <button class="btn" name="add_news" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
                                         </div>
                                     </form>
                                 </div>
