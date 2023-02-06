@@ -41,6 +41,24 @@ if (isset($_GET['lang'])) {
 	$stmt->execute();
 	$row_news = $stmt->fetchAll();
 }
+
+
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt = $conn->prepare("SELECT * FROM cook_detail_en");
+		$stmt->execute();
+		$row_cook_detail = $stmt->fetchAll();
+	} else {
+		$stmt = $conn->prepare("SELECT * FROM cook_detail");
+		$stmt->execute();
+		$row_cook_detail = $stmt->fetchAll();
+	}
+} else {
+	$stmt = $conn->prepare("SELECT * FROM cook_detail");
+	$stmt->execute();
+	$row_cook_detail = $stmt->fetchAll();
+}
 ?>
 
 
@@ -282,7 +300,7 @@ if (isset($_GET['lang'])) {
 
 
 
-						<?php for ($i = 1; $i <= 3; $i++) { ?>
+						<?php for ($i = 0; $i <= 2; $i++) { ?>
 
 							<a class="item-new" href="new-detail?news_id=<?php echo $row_news[$i]['id_news']; ?>&<?php if (isset($_GET['lang'])) {
 																														if ($_GET['lang'] == "en") {
@@ -352,18 +370,34 @@ if (isset($_GET['lang'])) {
 							<?php for ($i = 1; $i <= 2; $i++) { ?>
 
 								<div class="col-md-6">
-									<a class="item-cooking" href="cooking-detail.php">
+									<a class="item-cooking" href="cooking-detail?detail_id=<?php echo $row_cook_detail[$i]['detail_id']; ?>&<?php if (isset($_GET['lang'])) {
+																														if ($_GET['lang'] == "en") {
+																															echo 'lang=en';
+																														} else {
+																															echo 'lang=th';
+																														}
+																													} else {
+																														echo "";
+																													} ?>">
 
 										<div class="img-cooking">
-											<img class="img-fluid " src="upload/cooking0<?= $i ?>.jpg">
+											<img class="img-fluid " src="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_detail[$i]['img_cover']; ?>">
 										</div>
 
 										<div class="text-cooking">
-											<h4 class="text-warning">ชาเขียวไข่มุก</h4>
-											<p>ขนมปังปิ้ง 1 ชิ้น, ซอสคัสตาร์ดในปริมาณ
-												ที่เหมาะสม, ผลไม้หั่นสี่เหลี่ยมลูกเต๋า
-												ที่เหมาะสม, ถ้วยทนการอบ 1 ถ้วย</p>
-											<span class="text-warning">Read More ++</span>
+											<h4 class="text-warning"><?php echo $row_cook_detail[$i]['detail_name']; ?></h4>
+											<p><?php echo $row_cook_detail[$i]['content1']; ?>
+											<?php echo $row_cook_detail[$i]['content2']; ?>
+											<?php echo $row_cook_detail[$i]['content3']; ?></p>
+											<span class="text-warning"><?php if (isset($_GET['lang'])) {
+																			if ($_GET['lang'] == "en") {
+																				echo 'Read More ++';
+																			} else {
+																				echo 'อ่านเพิ่มเติม ++';
+																			}
+																		} else {
+																			echo "อ่านเพิ่มเติม ++";
+																		} ?></span>
 										</div>
 
 									</a>

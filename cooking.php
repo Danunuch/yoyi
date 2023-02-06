@@ -1,5 +1,77 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+// error_reporting(0);
+if (!isset($_SESSION)) {
+	session_start();
+}
+
+//Query Detail
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt = $conn->prepare("SELECT * FROM cook_detail_en");
+		$stmt->execute();
+		$row_cook_detail = $stmt->fetchAll();
+	} else if ($lang == "th") {
+		$stmt = $conn->prepare("SELECT * FROM cook_detail");
+		$stmt->execute();
+		$row_cook_detail = $stmt->fetchAll();
+	}
+} else {
+	$stmt = $conn->prepare("SELECT * FROM cook_detail");
+	$stmt->execute();
+	$row_cook_detail = $stmt->fetchAll();
+}
+
+
+//Query type
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt = $conn->prepare("SELECT * FROM type_cook_en");
+		$stmt->execute();
+		$row_type_cook = $stmt->fetchAll();
+	} else if ($lang == "th") {
+		$stmt = $conn->prepare("SELECT * FROM type_cook");
+		$stmt->execute();
+		$row_type_cook = $stmt->fetchAll();
+	}
+} else {
+	$stmt = $conn->prepare("SELECT * FROM type_cook");
+	$stmt->execute();
+	$row_type_cook = $stmt->fetchAll();
+}
+
+
+//Query sub
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt = $conn->prepare("SELECT * FROM catalog_cook_en WHERE type_id = :type_id");
+		$stmt->bindParam(":type_id", $type_id);
+		$stmt->execute();
+		$row_catalog_cook = $stmt->fetchAll();
+	} else if ($lang == "th") {
+		$stmt = $conn->prepare("SELECT * FROM catalog_cook WHERE type_id = :type_id");
+		$stmt->bindParam(":type_id", $type_id);
+		$stmt->execute();
+		$row_catalog_cook = $stmt->fetchAll();
+	}
+} else {
+	$stmt = $conn->prepare("SELECT * FROM catalog_cook WHERE type_id = :type_id");
+	$stmt->bindParam(":type_id", $type_id);
+	$stmt->execute();
+	$row_catalog_cook = $stmt->fetchAll();
+}
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
+
 <head>
 
 	<link rel="shortcut icon" href="images/favicon.ico">
@@ -22,7 +94,7 @@
 	<link rel="stylesheet" type="text/css" href="css/icofont.css?v=1001">
 	<link href="css/spinner.css?v=1001" rel="stylesheet">
 	<!-- CSS only -->
-	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet" >
+	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet">
 
 	<link rel="stylesheet" href="css/coreNavigation.css?v=1001" />
 	<link rel="stylesheet" href="css/typography.css?v=1001" />
@@ -41,6 +113,12 @@
 	<link href="css/slick-custom.css?v=1001" rel="stylesheet">
 
 </head>
+<style>
+	.none {
+		display: none;
+	}
+</style>
+
 <body>
 	<main>
 
@@ -55,21 +133,9 @@
 
 
 
-		<?php include("header.php");?>
+		<?php include("header.php"); ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-		<section id="page-section" >
+		<section id="page-section">
 
 			<img class="img-fluid" src="images/page.png">
 
@@ -80,77 +146,120 @@
 
 
 
-				<?php include("navigator.php");?>
+				<?php include("navigator.php"); ?>
 
 
 				<div class="mb-5 text-center">
-					<h2><span class="text-warning">Cooking</span> Time</h2>
+					<h2><span class="text-warning"><?php if (isset($_GET['lang'])) {
+														if ($_GET['lang'] == "en") {
+															echo 'Cooking';
+														} else {
+															echo 'เวลาทำ';
+														}
+													} else {
+														echo "เวลาทำ";
+													} ?></span> <?php if (isset($_GET['lang'])) {
+																	if ($_GET['lang'] == "en") {
+																		echo 'Time';
+																	} else {
+																		echo 'อาหาร';
+																	}
+																} else {
+																	echo "อาหาร";
+																} ?></h2>
 				</div>
-
-
-
-
-
-
-
-
 
 				<div class="row">
 					<div class="col-lg-3">
-						<h4 class="text-info">วิธีการปรุงอาหาร</h4>
-
-
-						<?php $Cooking_detail = array ( 
-							'1'=>"ชาเขียวไข่มุก", 
-							'2'=>"บะหมี่กึ่งสำเร็จรูปแช่แข็ง 5Q", 
-							'3'=>"มัทฉะลาเต้ร้อน",
-							'4'=>"ซุปข้าวโพดไข่มุกหยกขาว",
-							'5'=>"ชาไข่มุกอัลมอนด์นัท",
-							'6'=>"รักเพิร์ลแมงโก้สมูทตี้",
-							'7'=>"ครีมไข่มุกผลไม้ดอกไม้",
-							'8'=>"ซาลาเปาสีขาวรูปไข่มุก",
-							'9'=>"บลิส เพิร์ล ฟรุ๊ต มัฟฟิน",
-							'10'=>"ไอศกรีมชาไข่มุก",
-							'11'=>"สลัดมันฝรั่งเพิร์ลไลท์"
-						); ?>
-
-
-
-
-
-
-
-
-
-
-
+						<h4 class="text-info"><?php if (isset($_GET['lang'])) {
+													if ($_GET['lang'] == "en") {
+														echo 'How to cook';
+													} else {
+														echo 'วิธีการปรุงอาหาร';
+													}
+												} else {
+													echo "วิธีการปรุงอาหาร";
+												} ?></h4>
 
 
 
 						<div id='cssmenu'>
 							<ul>
-								<li class='has-sub'><a href='#'>วิธีการปรุงอาหาร</a>
-									<ul>
 
-										<li><a href='cooking.php'>ลูกแป้งดิบ</a></li>
-										<li><a href='cooking.php'>วุ้นเส้น</a></li>
-									</ul>
+								<?php for ($i = 0; $i < count($row_type_cook); $i++) {
 
-								</li>
+									if ($lang == 'en') {
+										$a = $conn->prepare("SELECT * FROM catalog_cook_en WHERE type_id = :id");
+										$a->bindParam(":id", $row_type_cook[$i]['type_id']);
+										$a->execute();
+										$row_a = $a->fetchAll();
+									} else if ($lang == 'th'){
+										$a = $conn->prepare("SELECT * FROM catalog_cook WHERE type_id = :id");
+										$a->bindParam(":id", $row_type_cook[$i]['type_id']);
+										$a->execute();
+										$row_a = $a->fetchAll();
+										
+									} else  {
+										$a = $conn->prepare("SELECT * FROM catalog_cook WHERE type_id = :id");
+										$a->bindParam(":id", $row_type_cook[$i]['type_id']);
+										$a->execute();
+										$row_a = $a->fetchAll();
+									}
+
+								?>
 
 
+									<li class='active has-sub'><a href='#'><?php echo $row_type_cook[$i]['type_name']; ?></a>
+										<ul>
+											<?php for ($j = 0; $j < count($row_a); $j++) {
 
-								
-								<li class='active has-sub'><a href='#'>โซนสูตรอาหาร</a>
-									<ul>
-										<?php for($i=1;$i<=11;$i++){ ?>
-											<li><a href='cooking.php'><?= $Cooking_detail[$i] ?></a></li>
-										<?php } ?>
-									</ul>
+												if (isset($_GET['catasub_id'])) {
+													$catalog = $_GET['catasub_id'];
+													if ($lang == "en") {
+														$stmt = $conn->prepare("SELECT * FROM catalog_cook_en WHERE id = :id");
+														$stmt->bindParam(":id", $catalog);
+														$stmt->execute();
+														$row_catalog_cook = $stmt->fetchAll();
+													} else if ($lang == "th") {
+														$stmt = $conn->prepare("SELECT * FROM catalog_cook WHERE id = :id");
+														$stmt->bindParam(":id", $catalog);
+														$stmt->execute();
+														$row_catalog_cook = $stmt->fetchAll();
+													} else {
+														$stmt = $conn->prepare("SELECT * FROM catalog_cook WHERE id = :id");
+														$stmt->bindParam(":id", $catalog);
+														$stmt->execute();
+														$row_catalog_cook = $stmt->fetchAll();
+													}
+												} else if (!isset($_GET['catasub_id']) && isset($_GET['lang'])) {
+													if ($_GET['lang'] == "en") {
+														$stmt = $conn->prepare("SELECT * FROM catalog_cook_en ");
+														$stmt->execute();
+														$row_catalog_cook = $stmt->fetchAll();
+													} else if ($_GET['lang'] == "th") {
+														$stmt = $conn->prepare("SELECT * FROM catalog_cook ");
+														$stmt->execute();
+														$row_catalog_cook = $stmt->fetchAll();
+													}
+												} else {
+													$stmt = $conn->prepare("SELECT * FROM catalog_cook ");
+													$stmt->execute();
+													$row_catalog_cook = $stmt->fetchAll();
+												}
 
-								</li>
+											?>
 
-								
+												<li><a href='cooking-detail?catasub_id=<?php echo $row_a[$j]['id'] ?><?php if ($lang == 'en') {
+																													echo '&lang=en';
+																												} else {
+																													echo '&lang=th';
+																												} ?>'><?php echo $row_a[$j]['catalog_name']; ?></a></li>
+											<?php } ?>
+										</ul>
+
+									</li>
+
+								<?php } ?>
 							</ul>
 						</div>
 
@@ -160,17 +269,17 @@
 
 					</div>
 					<div class="col-lg-9">
-						<h4 class="text-info">ชาเขียวไข่มุก</h4>
+						<h4 class="text-info"></h4>
 						<div class="row mb-4">
 
 
-							<?php for($i=4;$i<=6;$i++){ ?> 
+							<?php for ($i = 4; $i <= 6; $i++) { ?>
 								<div class="col-6 col-md-4">
 									<div class="view-seventh mb-4">
-										<a href="upload/cooking0<?=$i?>.jpg" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
+										<a href="upload/cooking0<?= $i ?>.jpg" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
 											<div class="box-gallery">
 												<div class="bg-img">
-													<img class="img-fluid" src="upload/cooking0<?=$i?>.jpg" alt="ชาเขียวไข่มุก">
+													<img class="img-fluid" src="upload/cooking0<?= $i ?>.jpg" alt="ชาเขียวไข่มุก">
 												</div>
 
 											</div>
@@ -182,28 +291,71 @@
 						</div>
 
 
-
-
-
-
-
-						<?php $Cooking_detail = array ( 
-							'1'=>"ส่วนผสม: ครีมสดสำหรับสัตว์ 200 มล. นม 300 มล. ชาดำ 2 ซอง น้ำตาล 70 กรัม ผงปรุงแช่แข็ง 5Q", 
-							'2'=>"อุ่นนมจนเดือดแล้วเปลี่ยนเป็นไฟอ่อน จากนั้นใส่น้ำตาลลงไปคนให้ละลาย", 
-							'3'=>"ใส่ถุงชาลงไป คนให้เข้ากัน ปิดไฟและเคี่ยวต่ออีก 10 นาที", 
-							'4'=>"หลังจากตุ๋นเสร็จ นำถุงชาออก เติมครีมสดและคนให้เข้ากัน", 
-							'5'=>"เทใส่ภาชนะแล้วปล่อยให้เย็นแช่แข็งประมาณ 4-6 ชั่วโมง", 
-							'6'=>"นำบะหมี่ที่ปรุงสุกแช่แข็ง 5Q กลับคืนสู่อุณหภูมิตามวิธีการปรุงก่อนหน้า", 
-							'7'=>"ตักไอศกรีมแช่แข็งใส่ถ้วย โรยผงไข่มุก เป็นอันเสร็จ!"
-						); ?>
-
-
 						<div class="cooking-ol">
-
 							<ol>
-								<?php for($i=1;$i<=7;$i++){ ?>
-									<li><?= $Cooking_detail[$i] ?></li>
-								<?php } ?>
+								<li <?php if ($row_cook_detail[1]['content1'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content1']; ?></li>
+
+
+								<li <?php if ($row_cook_detail[1]['content2'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content2']; ?></li>
+
+
+								<li <?php if ($row_cook_detail[1]['content3'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content3']; ?></li>
+
+
+								<li <?php if ($row_cook_detail[1]['content4'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content4']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content5'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content5']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content6'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content6']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content7'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content7']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content8'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content8']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content9'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content9']; ?></li>
+
+								<li <?php if ($row_cook_detail[1]['content10'] == "") {
+										echo "style='display:none;'";
+									} else {
+										echo "";
+									} ?>><?php echo $row_cook_detail[1]['content10']; ?></li>
+
 							</ol>
 
 						</div>
@@ -235,7 +387,7 @@
 
 
 
-	<?php include("footer.php");?>
+	<?php include("footer.php"); ?>
 
 
 	<script src="js/bootstrap.bundle.min.js?v=1001"></script>
@@ -243,7 +395,7 @@
 	<script src="js/coreNavigation.js?v=1001"></script>
 	<script>
 		$('nav').coreNavigation({
-			menuPosition: "center", 
+			menuPosition: "center",
 			container: true,
 			responsideSlide: true, // true or false
 			mode: 'sticky',
@@ -265,13 +417,12 @@
 	</script>
 
 	<script type="text/javascript">
-
-		'use strict'; 
-		var $window = $(window); 
+		'use strict';
+		var $window = $(window);
 		$window.on({
-			'load': function () {
+			'load': function() {
 
-				/* Preloader */ 
+				/* Preloader */
 				$('.spinner').fadeOut(1500);
 
 
@@ -279,6 +430,7 @@
 			},
 
 		});
+
 		function myFunctionDos() {
 			var x = document.getElementById("myDIV");
 			if (x.style.display === "none") {
@@ -292,45 +444,37 @@
 	<script src="js/jquery.youtubebackground.js?v=1001"></script>
 
 	<script type="text/javascript">
-
-        //======= Youtube Video Background ========//
+		//======= Youtube Video Background ========//
 		$('.video-bg').YTPlayer({
 			fitToBackground: true,
-            videoId: 'Dr6JVIs6hgc'//Set Your Youtube Video ID
-        });
+			videoId: 'Dr6JVIs6hgc' //Set Your Youtube Video ID
+		});
+	</script>
+	<script type="text/javascript" src="js/slick.min.js?v=1001"></script>
+	<script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
 
 
 
+	<script type="text/javascript" src="js/main.js?v=1001"></script>
+	<!-- Vendors -->
+	<script src="js/jarallax.min.js?v=1001"></script>
+	<!-- Template Functions -->
+	<script src="js/functions.js?v=1001"></script>
+	<script src="js/category.js?v=1001"></script>
+
+	<script src="js/lazyload.js?v=1001"></script>
 
 
-
-
-
-    </script>
-    <script type="text/javascript" src="js/slick.min.js?v=1001"></script>
-    <script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
-
-
-
-    <script type="text/javascript" src="js/main.js?v=1001"></script>
-    <!-- Vendors -->
-    <script src="js/jarallax.min.js?v=1001"></script>
-    <!-- Template Functions -->
-    <script src="js/functions.js?v=1001"></script>
-    <script src="js/category.js?v=1001"></script>
-
-    <script  src="js/lazyload.js?v=1001"></script>
-
-
-    <script src="js/jquery.chocolat.js"></script>
-    <script type="text/javascript">
-    	$(function() {
-    		$('.view-seventh a').Chocolat();
-    		$('.view-seventh2 a').Chocolat();
-    		$('.view-seventh3 a').Chocolat();
-    	});
-    </script>
+	<script src="js/jquery.chocolat.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('.view-seventh a').Chocolat();
+			$('.view-seventh2 a').Chocolat();
+			$('.view-seventh3 a').Chocolat();
+		});
+	</script>
 
 </body>
 </body>
+
 </html>

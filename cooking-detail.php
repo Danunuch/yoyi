@@ -1,5 +1,46 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+// error_reporting(0);
+if (!isset($_SESSION)) {
+	session_start();
+}
+
+
+
+if (isset($_GET['detail_id'])) {
+	$detail = $_GET['detail_id'];
+
+
+	//Query Detail
+	if (isset($_GET['lang'])) {
+		$lang = $_GET['lang'];
+		if ($lang == "en") {
+			$stmt = $conn->prepare("SELECT * FROM cook_detail_en WHERE detail_id = :detail_id");
+			$stmt->bindParam(":detail_id", $detail);
+			$stmt->execute();
+			$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
+		} else if ($lang == "th") {
+			$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE detail_id = :detail_id");
+			$stmt->bindParam(":detail_id", $detail);
+			$stmt->execute();
+			$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
+		}
+	} else {
+		$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE detail_id = :detail_id");
+		$stmt->bindParam(":detail_id", $detail);
+		$stmt->execute();
+		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+}
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
+
 <head>
 
 	<link rel="shortcut icon" href="images/favicon.ico">
@@ -22,7 +63,7 @@
 	<link rel="stylesheet" type="text/css" href="css/icofont.css?v=1001">
 	<link href="css/spinner.css?v=1001" rel="stylesheet">
 	<!-- CSS only -->
-	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet" >
+	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet">
 
 	<link rel="stylesheet" href="css/coreNavigation.css?v=1001" />
 	<link rel="stylesheet" href="css/typography.css?v=1001" />
@@ -40,6 +81,14 @@
 	<link href="css/slick-custom.css?v=1001" rel="stylesheet">
 
 </head>
+
+
+<style>
+	.none {
+		display: none;
+	}
+</style>
+
 <body>
 	<main>
 
@@ -54,7 +103,7 @@
 
 
 
-		<?php include("header.php");?>
+		<?php include("header.php"); ?>
 
 
 
@@ -68,7 +117,7 @@
 
 
 
-		<section id="page-section" >
+		<section id="page-section">
 
 			<img class="img-fluid" src="images/page.png">
 
@@ -79,29 +128,7 @@
 				<div class="pb-5">
 
 
-					<?php include("navigator.php");?>
-
-
-					
-
-
-
-
-					<h4 class="text-warning">ชาเขียวไข่มุก</h4>
-
-
-
-					<p>
-					วัตถุดิบชานมไข่มุก ร้านขายวัตถุดิบชากาแฟ สิ่งสำคัญสำหรับมือใหม่อยากเปิดร้าน ซึ่งเชื่อว่าหลาย ๆ คนคงต้องอยากรู้อยู่แล้วว่าต้องมีอะไีรบ้าง วัตถุดิบที่จำเป็น สิ่งที่ขาดไม่ได้ โดยที่ไม่ต้องใช้เงินในการลงทุนเยอะมาก หรือเกินความจำเป็นในช่วงที่กำลังเปิดร้านใหม่</p>
-
-					<p>
-						ยิ่งในปัจจุบันนี้การเปิดร้านกาแฟ ร้านชาไข่มุก แบบร้านเครื่องดื่มเล็ก ๆ นั้นมีเยอะมาก เพราะไม่ต้องใช้งบเยอะ และสามารถเปิดขายได้ง่าย ๆ แค่มีพื้นที่หน้าบ้าน ในตลาด หน้าโรงเรียน หรือพื้นที่ว่างที่เหมาะสำหรับเปิดร้านขาย ที่สำคัญยังเอาใจกลุ่มลูกค้าวัยเด็กได้ดีอีกด้วย
-					</p>
-
-					<p>
-						แล้วการจะเปิดร้านขายชานมไข่มุกเล็ก ๆ ต้องมีวัตถุดิบที่สำคัญอะไรบ้าง ที่จะสามารถนำมาชงขายได้หลากหลาย ช่วยเพิ่มยอดขายให้กับร้าน นำมาขายแล้วคืนทุนได้เร็ว จะมีอะไรบ้างที่เป็นวัตถุดิบหลัก วันนี้ทาง bluemocha  เรามีคำตอบมาฝากกัน รับรองว่ามีแค่นี้ก็นำมาขายได้ เรียกลูกค้าได้เยอะ แถมลูกค้าติดใจแน่นอน
-
-					</p>
+					<?php include("navigator.php"); ?>
 
 
 
@@ -109,19 +136,98 @@
 
 
 
+					<h4 class="text-warning"><?php echo $row_cook_detail['detail_name']; ?></h4>
 
 
+
+					<p><?php if ($row_cook_detail['content1'] == "") {
+							echo "style='display:none;'";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content1']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content2'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content2']; ?></p>
+
+
+					<p><?php if ($row_cook_detail['content3'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content3']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content4'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content4']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content5'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content5']; ?></p>
+
+
+
+				<p><?php if ($row_cook_detail['content6'] == "null") {
+						echo "";
+					} else {
+						echo "";
+					} ?><?php echo $row_cook_detail['content6']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content7'] == "null") {
+						echo "";
+					} else {
+						echo "";
+					} ?><?php echo $row_cook_detail['content7']; ?></p>
+
+
+					<p><?php if ($row_cook_detail['content8'] == "null") {
+						echo "";
+					} else {
+						echo "";
+					} ?><?php echo $row_cook_detail['content8']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content9'] == "null") {
+						echo "";
+					} else {
+						echo "";
+					} ?><?php echo $row_cook_detail['content9']; ?></p>
+
+
+					<p><?php if ($row_cook_detail['content10'] == "null") {
+						echo "";
+					} else {
+						echo "";
+					} ?><?php echo $row_cook_detail['content10']; ?></p>
+
+
+		
 
 					<div class="row mt-4">
 
 
-						<?php for($i=4;$i<=6;$i++){ ?> 
+						<?php for ($i = 4; $i <= 6; $i++) { ?>
 							<div class="col-6 col-md-4">
 								<div class="view-seventh mb-4">
-									<a href="upload/cooking0<?=$i?>.jpg" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
+									<a href="upload/cooking0<?= $i ?>.jpg" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
 										<div class="box-gallery">
 											<div class="bg-img">
-												<img class="img-fluid" src="upload/cooking0<?=$i?>.jpg" alt="ชาเขียวไข่มุก">
+												<img class="img-fluid" src="upload/cooking0<?= $i ?>.jpg" alt="ชาเขียวไข่มุก">
 											</div>
 
 										</div>
@@ -137,25 +243,25 @@
 				</div>
 
 
-			</section>
+		</section>
 
 
-		</main>
+	</main>
 
 
 
 
 
-		<?php include("footer.php");?>
+	<?php include("footer.php"); ?>
 
 
-		<script src="js/bootstrap.bundle.min.js?v=1001"></script>
-		<script src="js/jquery.min.js?v=1001"></script>
-		<script src="js/coreNavigation.js?v=1001"></script>
-		<script>
-			$('nav').coreNavigation({
-				menuPosition: "center", 
-				container: true,
+	<script src="js/bootstrap.bundle.min.js?v=1001"></script>
+	<script src="js/jquery.min.js?v=1001"></script>
+	<script src="js/coreNavigation.js?v=1001"></script>
+	<script>
+		$('nav').coreNavigation({
+			menuPosition: "center",
+			container: true,
 			responsideSlide: true, // true or false
 			mode: 'sticky',
 			onStartSticky: function() {
@@ -176,13 +282,12 @@
 	</script>
 
 	<script type="text/javascript">
-
-		'use strict'; 
-		var $window = $(window); 
+		'use strict';
+		var $window = $(window);
 		$window.on({
-			'load': function () {
+			'load': function() {
 
-				/* Preloader */ 
+				/* Preloader */
 				$('.spinner').fadeOut(1500);
 
 
@@ -190,56 +295,49 @@
 			},
 
 		});
-  function myFunctionDos() {
-            var x = document.getElementById("myDIV");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-        }
+
+		function myFunctionDos() {
+			var x = document.getElementById("myDIV");
+			if (x.style.display === "none") {
+				x.style.display = "block";
+			} else {
+				x.style.display = "none";
+			}
+		}
 	</script>
 
 	<script src="js/jquery.youtubebackground.js?v=1001"></script>
 
 	<script type="text/javascript">
-
-        //======= Youtube Video Background ========//
+		//======= Youtube Video Background ========//
 		$('.video-bg').YTPlayer({
 			fitToBackground: true,
-            videoId: 'Dr6JVIs6hgc'//Set Your Youtube Video ID
-        });
+			videoId: 'Dr6JVIs6hgc' //Set Your Youtube Video ID
+		});
+	</script>
+	<script type="text/javascript" src="js/slick.min.js?v=1001"></script>
+	<script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
 
 
 
+	<script type="text/javascript" src="js/main.js?v=1001"></script>
+	<!-- Vendors -->
+	<script src="js/jarallax.min.js?v=1001"></script>
+	<!-- Template Functions -->
+	<script src="js/functions.js?v=1001"></script>
+
+	<script src="js/lazyload.js?v=1001"></script>
 
 
-
-
-
-    </script>
-    <script type="text/javascript" src="js/slick.min.js?v=1001"></script>
-    <script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
-
-
-
-    <script type="text/javascript" src="js/main.js?v=1001"></script>
-    <!-- Vendors -->
-    <script src="js/jarallax.min.js?v=1001"></script>
-    <!-- Template Functions -->
-    <script src="js/functions.js?v=1001"></script>
-
-    <script  src="js/lazyload.js?v=1001"></script>
-
-
-    <script src="js/jquery.chocolat.js"></script>
-    <script type="text/javascript">
-    	$(function() {
-    		$('.view-seventh a').Chocolat();
-    		$('.view-seventh2 a').Chocolat();
-    		$('.view-seventh3 a').Chocolat();
-    	});
-    </script>
+	<script src="js/jquery.chocolat.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('.view-seventh a').Chocolat();
+			$('.view-seventh2 a').Chocolat();
+			$('.view-seventh3 a').Chocolat();
+		});
+	</script>
 </body>
 </body>
+
 </html>

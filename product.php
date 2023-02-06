@@ -1,3 +1,31 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+error_reporting(0);
+if (!isset($_SESSION)) {
+    session_start();
+}
+
+
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'];
+    if ($lang == "en") {
+        $stmt = $conn->prepare("SELECT * FROM product_en");
+        $stmt->execute();
+        $row_product = $stmt->fetchAll();
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM product");
+        $stmt->execute();
+        $row_product = $stmt->fetchAll();
+    }
+} else {
+    $stmt = $conn->prepare("SELECT * FROM product");
+    $stmt->execute();
+    $row_product = $stmt->fetchAll();
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
 <head>
@@ -11,9 +39,6 @@
 	<meta name="author" content="Yo Yi Foods Co., Ltd.">
 
 	<title>Yo Yi Foods Co., Ltd.</title>
-
-
-
 
 
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700;800;900&display=swap">
@@ -56,18 +81,6 @@
 
 		<?php include("header.php");?>
 
-
-
-
-
-
-
-
-
-
-
-
-
 		<section id="page-section" >
 
 			<img class="img-fluid" src="images/page.png">
@@ -83,38 +96,48 @@
 
 
 					<div class="mb-5 text-center">
-						<h2><span class="text-warning">สิน</span>ค้า</h2>
+						<h2><span class="text-warning"><?php if (isset($_GET['lang'])) {
+                                                        if ($_GET['lang'] == "en") {
+                                                            echo 'Pro';
+                                                        } else {
+                                                            echo 'สิน';
+                                                        }
+                                                    } else {
+                                                        echo "สิน";
+                                                    } ?></span><?php if (isset($_GET['lang'])) {
+                                                        if ($_GET['lang'] == "en") {
+                                                            echo 'duct';
+                                                        } else {
+                                                            echo 'ค้า';
+                                                        }
+                                                    } else {
+                                                        echo "ค้า";
+                                                    } ?></h2>
 					</div>
-
-
-
-
-
-
-
-
-
-					<?php $Product = array ( 
-						'1'=>"เม็ดไข่มุกสีดำ", 
-						'2'=>"เม็ดไข่มุกสีทอง", 
-						'3'=>"เม็ดไข่มุกสีขาว"
-					); ?>
 
 
 
 					<div class="row justify-content-center">
 
-						<?php for($i=1;$i<=3;$i++){ ?>
+						<?php for($i=0;$i<count($row_product);$i++){ ?>
 							<div class="col-md-4 col-lg-4">
-								<a class="item-product" href="product-detail0<?=$i?>.php">
+								<a class="item-product" href="product-detail?product_id=<?php echo $row_product[$i]['id_product']; ?><?php if (isset($_GET['lang'])) {
+																														if ($_GET['lang'] == "en") {
+																															echo '&lang=en';
+																														} else {
+																															echo '&lang=th';
+																														}
+																													} else {
+																														echo "";
+																													} ?>">
 
 									<div class="img-product">
-										<img class="img-fluid " src="upload/product0<?=$i?>.jpg">
+										<img class="img-fluid " src="webpanelcw/uploads/upload_product/<?php echo $row_product[$i]['img_cover']; ?>">
 									</div>
 
 									<div class="text-product">
 
-										<h4 ><?= $Product[$i] ?></h4>
+										<h4 ><?php echo $row_product[$i]['product_name'] ?></h4>
 										
 									</div>
 

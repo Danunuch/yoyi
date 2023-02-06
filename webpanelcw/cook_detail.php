@@ -4,7 +4,7 @@
 <?php
 require_once('config/yoyi_db.php');
 session_start();
-// error_reporting(0);
+error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
     echo "<script>alert('Please Login')</script>";
     echo "<meta http-equiv='refresh' content='0;url=index'>";
@@ -20,6 +20,7 @@ $row_detail = $data_detail->fetchAll();
 //Edit cook detail
 if (isset($_POST['edit_detail_cook'])) {
     $detail_id = $_POST['detail_id'];
+    $img_cover = $_FILES['img_cover_edit'];
     $detail_name = $_POST['detail_name'];
     $content1 = $_POST['content1'];
     $content2 = $_POST['content2'];
@@ -48,28 +49,36 @@ if (isset($_POST['edit_detail_cook'])) {
     $query_catalog =  $select_catalog->fetch(PDO::FETCH_ASSOC);
 
 
+    $allow = array('jpg', 'jpeg', 'png', 'webp');
+    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    $fileNew1 = rand() . "." . "webp";
+    $filePath1 = "uploads/upload_cooking/" . $fileNew1;
 
-    $edit_detail = $conn->prepare("UPDATE cook_detail SET detail_name = :detail_name, content1 = :content1, content2 = :content2, content3 = :content3 , content4 = :content4, content5 = :content5,
+    if (in_array($fileActExt1, $allow)) {
+        if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+            if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                $edit_detail = $conn->prepare("UPDATE cook_detail SET img_cover = :img_cover,detail_name = :detail_name , content1 = :content1, content2 = :content2, content3 = :content3 , content4 = :content4, content5 = :content5,
                                                         content6 = :content6, content7 = :content7, content8 = :content8 , content9 = :content9, content10 = :content10, type_id = :type_id, id = :id WHERE detail_id = :detail_id");
+                $edit_detail->bindParam(":img_cover", $fileNew1);
+                $edit_detail->bindParam(":detail_name", $detail_name);
+                $edit_detail->bindParam(":content1", $content1);
+                $edit_detail->bindParam(":content2", $content2);
+                $edit_detail->bindParam(":content3", $content3);
+                $edit_detail->bindParam(":content4", $content4);
+                $edit_detail->bindParam(":content5", $content5);
+                $edit_detail->bindParam(":content6", $content6);
+                $edit_detail->bindParam(":content7", $content7);
+                $edit_detail->bindParam(":content8", $content8);
+                $edit_detail->bindParam(":content9", $content9);
+                $edit_detail->bindParam(":content10", $content10);
+                $edit_detail->bindParam(":type_id", $query['type_id']);
+                $edit_detail->bindParam(":id", $query_catalog['id']);
+                $edit_detail->bindParam(":detail_id", $detail_id);
+                $edit_detail->execute();
 
-    $edit_detail->bindParam(":detail_name", $detail_name);
-    $edit_detail->bindParam(":content1", $content1);
-    $edit_detail->bindParam(":content2", $content2);
-    $edit_detail->bindParam(":content3", $content3);
-    $edit_detail->bindParam(":content4", $content4);
-    $edit_detail->bindParam(":content5", $content5);
-    $edit_detail->bindParam(":content6", $content6);
-    $edit_detail->bindParam(":content7", $content7);
-    $edit_detail->bindParam(":content8", $content8);
-    $edit_detail->bindParam(":content9", $content9);
-    $edit_detail->bindParam(":content10", $content10);
-    $edit_detail->bindParam(":type_id", $query['type_id']);
-    $edit_detail->bindParam(":id", $query_catalog['id']);
-    $edit_detail->bindParam(":detail_id", $detail_id);
-    $edit_detail->execute();
-
-    if ($edit_detail) {
-        echo "<script>
+                if ($edit_detail) {
+                    echo "<script>
                     $(document).ready(function() {
                         Swal.fire({
                             text: 'แก้ไขรายละเอียดสำเร็จ',
@@ -79,9 +88,9 @@ if (isset($_POST['edit_detail_cook'])) {
                         });
                     })
                     </script>";
-        echo "<meta http-equiv='refresh' content='2;url=cook_detail'>";
-    } else {
-        echo "<script>
+                    echo "<meta http-equiv='refresh' content='2;url=cook_detail'>";
+                } else {
+                    echo "<script>
                     $(document).ready(function() {
                         Swal.fire({
                             text: 'Something Went Wrong!!!',
@@ -91,13 +100,59 @@ if (isset($_POST['edit_detail_cook'])) {
                         });
                     })
                     </script>";
+                }
+            }
+        }
+    } else {
+        $edit_detail = $conn->prepare("UPDATE cook_detail SET detail_name = :detail_name, content1 = :content1, content2 = :content2, content3 = :content3 , content4 = :content4, content5 = :content5,
+            content6 = :content6, content7 = :content7, content8 = :content8 , content9 = :content9, content10 = :content10, type_id = :type_id, id = :id WHERE detail_id = :detail_id");
+        $edit_detail->bindParam(":detail_name", $detail_name);
+        $edit_detail->bindParam(":content1", $content1);
+        $edit_detail->bindParam(":content2", $content2);
+        $edit_detail->bindParam(":content3", $content3);
+        $edit_detail->bindParam(":content4", $content4);
+        $edit_detail->bindParam(":content5", $content5);
+        $edit_detail->bindParam(":content6", $content6);
+        $edit_detail->bindParam(":content7", $content7);
+        $edit_detail->bindParam(":content8", $content8);
+        $edit_detail->bindParam(":content9", $content9);
+        $edit_detail->bindParam(":content10", $content10);
+        $edit_detail->bindParam(":type_id", $query['type_id']);
+        $edit_detail->bindParam(":id", $query_catalog['id']);
+        $edit_detail->bindParam(":detail_id", $detail_id);
+        $edit_detail->execute();
+
+        if ($edit_detail) {
+            echo "<script>
+            $(document).ready(function() {
+                Swal.fire({
+                    text: 'แก้ไขรายละเอียดสำเร็จ',
+                    icon: 'success',
+                    timer: 10000,
+                    showConfirmButton: false
+                });
+            })
+            </script>";
+            echo "<meta http-equiv='refresh' content='2;url=cook_detail'>";
+        } else {
+            echo "<script>
+            $(document).ready(function() {
+                Swal.fire({
+                    text: 'Something Went Wrong!!!',
+                    icon: 'error',
+                    timer: 10000,
+                    showConfirmButton: false
+                });
+            })
+            </script>";
+        }
     }
 }
 
 
-
 //add cook detail
 if (isset($_POST['add_detail_cook'])) {
+    $img_cover = $_FILES['img_cover'];
     $detail_name = $_POST['detail_name'];
     $content1 = $_POST['content1'];
     $content2 = $_POST['content2'];
@@ -112,24 +167,36 @@ if (isset($_POST['add_detail_cook'])) {
     $type_id = $_POST['type_name'];
     $id = $_POST['catalog_name'];
 
-    $add_detail = $conn->prepare("INSERT INTO cook_detail(detail_name, content1, content2, content3, content4, content5, content6, content7,content8,content9,content10,type_id,id) VALUES(:detail_name, :content1, :content2, :content3, :content4, :content5, :content6, :content7, :content8, :content9, :content10, :type_id ,:id)");
-    $add_detail->bindParam(":detail_name", $detail_name);
-    $add_detail->bindParam(":content1", $content1);
-    $add_detail->bindParam(":content2", $content2);
-    $add_detail->bindParam(":content3", $content3);
-    $add_detail->bindParam(":content4", $content4);
-    $add_detail->bindParam(":content5", $content5);
-    $add_detail->bindParam(":content6", $content6);
-    $add_detail->bindParam(":content7", $content7);
-    $add_detail->bindParam(":content8", $content8);
-    $add_detail->bindParam(":content9", $content9);
-    $add_detail->bindParam(":content10", $content10);
-    $add_detail->bindParam(":type_id", $type_id);
-    $add_detail->bindParam(":id", $id);
-    $add_detail->execute();
 
-    if ($add_detail) {
-        echo "<script>
+    $allow = array('jpg', 'jpeg', 'png', 'webp');
+    $extention1 = explode(".", $img_cover['name']); //เเยกชื่อกับนามสกุลไฟล์
+    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    $fileNew1 = rand() . "." . "webp";
+    $filePath1 = "uploads/upload_cooking/" . $fileNew1;
+
+    try {
+        if (in_array($fileActExt1, $allow)) {
+            if ($img_cover['size'] > 0 && $img_cover['error'] == 0) {
+                if (move_uploaded_file($img_cover['tmp_name'], $filePath1)) {
+                    $add_detail = $conn->prepare("INSERT INTO cook_detail(img_cover,detail_name, content1, content2, content3, content4, content5, content6, content7,content8,content9,content10,type_id,id) VALUES( :img_cover, :detail_name, :content1, :content2, :content3, :content4, :content5, :content6, :content7, :content8, :content9, :content10, :type_id ,:id)");
+                    $add_detail->bindParam(":img_cover", $fileNew1);
+                    $add_detail->bindParam(":detail_name", $detail_name);
+                    $add_detail->bindParam(":content1", $content1);
+                    $add_detail->bindParam(":content2", $content2);
+                    $add_detail->bindParam(":content3", $content3);
+                    $add_detail->bindParam(":content4", $content4);
+                    $add_detail->bindParam(":content5", $content5);
+                    $add_detail->bindParam(":content6", $content6);
+                    $add_detail->bindParam(":content7", $content7);
+                    $add_detail->bindParam(":content8", $content8);
+                    $add_detail->bindParam(":content9", $content9);
+                    $add_detail->bindParam(":content10", $content10);
+                    $add_detail->bindParam(":type_id", $type_id);
+                    $add_detail->bindParam(":id", $id);
+                    $add_detail->execute();
+
+                    if ($add_detail) {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'เพิ่มข้อมูลสำเร็จ',
@@ -139,9 +206,9 @@ if (isset($_POST['add_detail_cook'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
-    } else {
-        echo "<script>
+                        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
+                    } else {
+                        echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -151,7 +218,13 @@ if (isset($_POST['add_detail_cook'])) {
                                 });
                             })
                             </script>";
-        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
+                        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
+                    }
+                }
+            }
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
     }
 }
 
@@ -283,7 +356,7 @@ if (isset($_POST['delete_all'])) {
                                         <thead>
                                             <tr align="center">
                                                 <th scope="col"><input type="checkbox" class="form-check-input checkbox-select" id="select_all"></th>
-                                                <!-- <th scope="col">ภาพหน้าปก</th> -->
+                                                <th scope="col">ภาพหน้าปก</th>
                                                 <th scope="col">เนื้อหา</th>
                                                 <th scope="col">จัดการ</th>
                                             </tr>
@@ -293,7 +366,7 @@ if (isset($_POST['delete_all'])) {
                                             foreach (array_reverse($row_detail) as $row_detail) { ?>
                                                 <tr align="center">
                                                     <td> <input type="checkbox" class="form-check-input checkbox checkbox-select" name="ids[]" value=<?php echo $row_detail['detail_id'] ?>></td>
-                                                    <!-- <td width="20%"> <img width="60%" src="uploads/upload_news/<?php echo $row_detail['img_cover']; ?>" alt=""></td> -->
+                                                    <td width="20%"> <img width="60%" src="uploads/upload_cooking/<?php echo $row_detail['img_cover']; ?>" alt=""></td>
                                                     <td align="left" width="40%"><?php echo $row_detail['detail_name']; ?>
                                                         <?php echo $row_detail['content1']; ?><br><?php echo $row_detail['content2']; ?><br><?php echo $row_detail['content3']; ?>....</td>
                                                     <td>
@@ -327,7 +400,7 @@ if (isset($_POST['delete_all'])) {
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <form method="post">
+                                                                <form method="post" enctype="multipart/form-data">
                                                                     <div class="row">
                                                                         <div class="col-md-12 mt-2">
                                                                             <input type="hidden" name="detail_id" value="<?php echo $row_detail['detail_id']; ?>">
@@ -368,6 +441,20 @@ if (isset($_POST['delete_all'])) {
                                                                             <input type="text" name="type_name" value="<?php echo $query['type_name'] ?>" class="form-control">
                                                                             <h6 for="catalog_name" class="col-form-label">แคตตาล็อก</h6>
                                                                             <input type="text" name="catalog_name" value="<?php echo $query_catalog['catalog_name'] ?>" class="form-control">
+
+                                                                            <h6 id="upload-img">ภาพหน้าปก</h6>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <input type="hidden" name="detail_id" value="<?php echo $row_detail['detail_id']; ?>">
+                                                                                    <input type="file" name="img_cover_edit" id="imgInput" class="form-control">
+
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <div id="gallery d-flex justify-content-center align-item-center">
+                                                                                        <img width="80%" id="previewImg" src="uploads/upload_cooking/<?php echo $row_detail['img_cover'] ?>">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
 
                                                                         </div>
 
@@ -484,7 +571,7 @@ if (isset($_POST['delete_all'])) {
                                                 $stmt2 = $conn->prepare("SELECT* FROM catalog_cook");
                                                 $stmt2->execute();
                                                 $catalog_cook = $stmt2->fetchAll();
-                                                
+
                                                 ?>
 
 
@@ -506,7 +593,17 @@ if (isset($_POST['delete_all'])) {
                                                 </select>
 
 
-
+                                                <h6 id="upload-img">ภาพหน้าปก</h6>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <input type="file" name="img_cover" id="imgInput_add" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div id="gallery d-flex justify-content-center align-item-center">
+                                                            <img width="80%" id="previewImg_add">
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                             </div>
 

@@ -1,3 +1,44 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+// error_reporting(0);
+if (!isset($_SESSION)) {
+	session_start();
+}
+
+
+if (isset($_GET['news_id'])) {
+	$news = $_GET['news_id'];
+
+	$stmt_img = $conn->prepare("SELECT * FROM news_img WHERE id_news = :id");
+	$stmt_img->bindParam(":id", $news);
+	$stmt_img->execute();
+	$row_news_img = $stmt_img->fetchAll();
+
+
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt = $conn->prepare("SELECT * FROM news_en WHERE id_news = :id_news");
+		$stmt->bindParam(":id_news", $news);
+		$stmt->execute();
+		$row_news = $stmt->fetch(PDO::FETCH_ASSOC);
+	} else {
+		$stmt = $conn->prepare("SELECT * FROM news WHERE id_news = :id_news");
+		$stmt->bindParam(":id_news", $news);
+		$stmt->execute();
+		$row_news = $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+} else {
+	$stmt = $conn->prepare("SELECT * FROM news WHERE id_news = :id_news");
+	$stmt->bindParam(":id_news", $news);
+	$stmt->execute();
+	$row_news = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
 <head>
@@ -87,12 +128,12 @@
 
 
 
-					<h4 class="text-warning">การเรียนรู้คือวิธีปลูกฝังการปรับปรุงอย่างต่อเนื่องซึ่งเป็นหัวใจสำคัญขององค์กร</h4>
+					<h4 class="text-warning"><?php echo $row_news['title']; ?></h4>
 
 
 
 					<p>
-					การเรียนรู้คือวิธีปลูกฝังการปรับปรุงอย่างต่อเนื่องซึ่งเป็นหัวใจสำคัญขององค์กร ทางบริษัทของเราจึงได้มีการจัดอบรมระบบมาตรฐาน FSSC 22000 ระบบการจัดการความปลอดภัยของอาหาร (FSMS) ให้กับพนักงานในองค์กรของเรา ซึ่งถือเป็นการเพิ่มเติมความรู้ เพิ่มความสำคัญในการปรับปรุงประสิทธิภาพด้านความปลอดภัยของอาหารของเราให้เพิ่มมากขึ้น เพื่อประสิทธิภาพในการทำงาน สินค้า แล้วพนักงานของเราอีกด้วย
+					<?php echo $row_news['content']; ?>
 
 					</p>
 
@@ -108,13 +149,13 @@
 					<div class="row mt-4">
 
 
-						<?php for($i=1;$i<=3;$i++){ ?> 
+						<?php for($i=0;$i<count($row_news_img);$i++){ ?> 
 							<div class="col-6 col-md-4">
 								<div class="view-seventh mb-4">
 									<a href="upload/cooking0<?=$i?>.jpg" class="b-link-stripe b-animate-go thickbox" title="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">
 										<div class="box-gallery">
 											<div class="bg-img">
-												<img class="img-fluid" src="upload/cooking0<?=$i?>.jpg" alt="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">
+												<img class="img-fluid" src="webpanelcw/uploads/upload_news/<?php echo $row_news_img[$i]['img']; ?>" alt="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">
 											</div>
 
 										</div>
@@ -124,9 +165,6 @@
 						<?php } ?>
 
 					</div>
-
-
-
 				</div>
 
 

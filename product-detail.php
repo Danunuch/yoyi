@@ -1,5 +1,63 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+// error_reporting(0);
+if (!isset($_SESSION)) {
+	session_start();
+}
+
+
+if (isset($_GET['product_id'])) {
+	$product = $_GET['product_id'];
+
+	//Query Product
+	if (isset($_GET['lang'])) {
+		$lang = $_GET['lang'];
+		if ($lang == "en") {
+			$stmt = $conn->prepare("SELECT * FROM product_en WHERE id_product = :id_product");
+			$stmt->bindParam(":id_product", $product);
+			$stmt->execute();
+			$row_product = $stmt->fetchAll();
+		} else if ($lang == "th") {
+			$stmt = $conn->prepare("SELECT * FROM product WHERE id_product = :id_product");
+			$stmt->bindParam(":id_product", $product);
+			$stmt->execute();
+			$row_product = $stmt->fetchAll();
+		}
+	} else {
+		$stmt = $conn->prepare("SELECT * FROM product WHERE id_product = :id_product");
+		$stmt->bindParam(":id_product", $product);
+		$stmt->execute();
+		$row_product = $stmt->fetchAll();
+	}
+
+
+	//Query Product Img
+	if (isset($_GET['lang'])) {
+		$lang = $_GET['lang'];
+		if ($lang == "en") {
+			$stmt = $conn->prepare("SELECT * FROM product_img");
+			$stmt->execute();
+			$row_product_img = $stmt->fetchAll();
+		} else if ($lang == "th") {
+			$stmt = $conn->prepare("SELECT * FROM product_img");
+			$stmt->execute();
+			$row_product_img = $stmt->fetchAll();
+		}
+	} else {
+		$stmt = $conn->prepare("SELECT * FROM product_img");
+		$stmt->execute();
+		$row_product_img = $stmt->fetchAll();
+	}
+}
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
+
 <head>
 
 	<link rel="shortcut icon" href="images/favicon.ico">
@@ -22,7 +80,7 @@
 	<link rel="stylesheet" type="text/css" href="css/icofont.css?v=1001">
 	<link href="css/spinner.css?v=1001" rel="stylesheet">
 	<!-- CSS only -->
-	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet" >
+	<link href="css/bootstrap.min.css?v=1001" rel="stylesheet">
 
 	<link rel="stylesheet" href="css/coreNavigation.css?v=1001" />
 	<link rel="stylesheet" href="css/typography.css?v=1001" />
@@ -41,6 +99,7 @@
 	<link href="css/slick-custom.css?v=1001" rel="stylesheet">
 
 </head>
+
 <body>
 	<main>
 
@@ -55,7 +114,7 @@
 
 
 
-		<?php include("header.php");?>
+		<?php include("header.php"); ?>
 
 
 
@@ -69,7 +128,7 @@
 
 
 
-		<section id="page-section"  class="shopping-cart">
+		<section id="page-section" class="shopping-cart">
 
 			<img class="img-fluid" src="images/page.png">
 
@@ -77,25 +136,16 @@
 
 
 
-				
 
 
-				<?php include("navigator.php");?>
 
-
-				
-
-
-				<div class="row align-items-center" >
+				<?php include("navigator.php"); ?>
 
 
 
 
 
-
-
-
-
+				<div class="row align-items-center">
 
 
 
@@ -108,11 +158,11 @@
 						<div class="product-images-carousel">
 							<ul id="smallGallery">
 
-								<?php for($ii=1;$ii<=3;$ii++){?>
-									<?php for($i=1;$i<=3;$i++){?>
+								<?php for ($ii = 0; $ii < count($row_product_img); $ii++) { ?>
+									<?php for ($i = 1; $i < count($row_product_img); $i++) { ?>
 										<li>
-											<a href="#" class="zoomGalleryActive" data-image="upload/product0<?=$i?>.jpg"  data-zoom-image="upload/product0<?=$i?>.jpg" data-target="279763451931">
-												<img class="border" src="upload/product0<?=$i?>.jpg" alt="Laura Mercier Foundation Powder">
+											<a href="#" class="zoomGalleryActive" data-image="upload/product0<?= $i ?>.jpg" data-zoom-image="upload/product0<?= $i ?>.jpg" data-target="279763451931">
+												<img class="border" src="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" alt="Laura Mercier Foundation Powder">
 											</a>
 										</li>
 									<?php } ?>
@@ -125,9 +175,9 @@
 
 						<div class="clearfix"></div>
 						<ul class="mobileGallery-product">
-							<?php for($ii=1;$ii<=3;$ii++){?>
-								<?php for($i=1;$i<=3;$i++){?>
-									<li><img src="upload/product0<?=$i?>.jpg" alt="Laura Mercier Foundation Powder" /></li>
+							<?php for ($ii = 0; $ii < count($row_product_img); $ii++) { ?>
+								<?php for ($i = 0; $i < count($row_product_img); $i++) { ?>
+									<li><img src="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" alt="Laura Mercier Foundation Powder" /></li>
 								<?php } ?>
 							<?php } ?>
 						</ul>
@@ -140,18 +190,9 @@
 					<div class="col-md-6 col-lg-6">
 
 
-						<h4 >ไข่มุขแช่แข็ง</h4>
-
 
 						<p>
-						วัตถุดิบชานมไข่มุก ร้านขายวัตถุดิบชากาแฟ สิ่งสำคัญสำหรับมือใหม่อยากเปิดร้าน ซึ่งเชื่อว่าหลาย ๆ คนคงต้องอยากรู้อยู่แล้วว่าต้องมีอะไีรบ้าง วัตถุดิบที่จำเป็น สิ่งที่ขาดไม่ได้ โดยที่ไม่ต้องใช้เงินในการลงทุนเยอะมาก หรือเกินความจำเป็นในช่วงที่กำลังเปิดร้านใหม่</p>
-
-						<p>
-							ยิ่งในปัจจุบันนี้การเปิดร้านกาแฟ ร้านชาไข่มุก แบบร้านเครื่องดื่มเล็ก ๆ นั้นมีเยอะมาก เพราะไม่ต้องใช้งบเยอะ และสามารถเปิดขายได้ง่าย ๆ แค่มีพื้นที่หน้าบ้าน ในตลาด หน้าโรงเรียน หรือพื้นที่ว่างที่เหมาะสำหรับเปิดร้านขาย ที่สำคัญยังเอาใจกลุ่มลูกค้าวัยเด็กได้ดีอีกด้วย
-						</p>
-
-						<p>
-							แล้วการจะเปิดร้านขายชานมไข่มุกเล็ก ๆ ต้องมีวัตถุดิบที่สำคัญอะไรบ้าง ที่จะสามารถนำมาชงขายได้หลากหลาย ช่วยเพิ่มยอดขายให้กับร้าน นำมาขายแล้วคืนทุนได้เร็ว จะมีอะไรบ้างที่เป็นวัตถุดิบหลัก วันนี้ทาง bluemocha  เรามีคำตอบมาฝากกัน รับรองว่ามีแค่นี้ก็นำมาขายได้ เรียกลูกค้าได้เยอะ แถมลูกค้าติดใจแน่นอน
+							<?php echo $row_product[0]['content']; ?>
 
 						</p>
 
@@ -170,44 +211,91 @@
 
 							<ul class="nav nav-tabs text-center d-block border-top" id="myTab" role="tablist">
 								<li class="nav-item d-inline-block" role="presentation">
-									<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">รายละเอียด</button>
+									<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true"><?php if (isset($_GET['lang'])) {
+																																																		if ($_GET['lang'] == "en") {
+																																																			echo 'Detail';
+																																																		} else {
+																																																			echo 'รายละเอียด';
+																																																		}
+																																																	} else {
+																																																		echo "รายละเอียด";
+																																																	} ?></button>
 								</li>
 								<li class="nav-item d-inline-block" role="presentation">
-									<button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">วิดีโอรีวิว</button>
+									<button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><?php if (isset($_GET['lang'])) {
+																																																		if ($_GET['lang'] == "en") {
+																																																			echo 'Video Review';
+																																																		} else {
+																																																			echo 'วิดีโอรีวิว';
+																																																		}
+																																																	} else {
+																																																		echo "วิดีโอรีวิว";
+																																																	} ?></button>
 								</li>
 								<li class="nav-item d-inline-block" role="presentation">
-									<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">ดาวน์โหลดแคตตาล็อค</button>
+									<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><?php if (isset($_GET['lang'])) {
+																																																		if ($_GET['lang'] == "en") {
+																																																			echo 'Download Catalog';
+																																																		} else {
+																																																			echo 'ดาวน์โหลดแคตตาล็อค';
+																																																		}
+																																																	} else {
+																																																		echo "ดาวน์โหลดแคตตาล็อค";
+																																																	} ?></button>
 								</li>
 							</ul>
 							<div class="tab-content" id="myTabContent">
 								<div class="tab-pane p-4 fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 									<p>
-									วัตถุดิบชานมไข่มุก ร้านขายวัตถุดิบชากาแฟ สิ่งสำคัญสำหรับมือใหม่อยากเปิดร้าน ซึ่งเชื่อว่าหลาย ๆ คนคงต้องอยากรู้อยู่แล้วว่าต้องมีอะไีรบ้าง วัตถุดิบที่จำเป็น สิ่งที่ขาดไม่ได้ โดยที่ไม่ต้องใช้เงินในการลงทุนเยอะมาก หรือเกินความจำเป็นในช่วงที่กำลังเปิดร้านใหม่</p>
-
-									<p>
-										ยิ่งในปัจจุบันนี้การเปิดร้านกาแฟ ร้านชาไข่มุก แบบร้านเครื่องดื่มเล็ก ๆ นั้นมีเยอะมาก เพราะไม่ต้องใช้งบเยอะ และสามารถเปิดขายได้ง่าย ๆ แค่มีพื้นที่หน้าบ้าน ในตลาด หน้าโรงเรียน หรือพื้นที่ว่างที่เหมาะสำหรับเปิดร้านขาย ที่สำคัญยังเอาใจกลุ่มลูกค้าวัยเด็กได้ดีอีกด้วย
-									</p>
-
-									<p>
-										แล้วการจะเปิดร้านขายชานมไข่มุกเล็ก ๆ ต้องมีวัตถุดิบที่สำคัญอะไรบ้าง ที่จะสามารถนำมาชงขายได้หลากหลาย ช่วยเพิ่มยอดขายให้กับร้าน นำมาขายแล้วคืนทุนได้เร็ว จะมีอะไรบ้างที่เป็นวัตถุดิบหลัก วันนี้ทาง bluemocha  เรามีคำตอบมาฝากกัน รับรองว่ามีแค่นี้ก็นำมาขายได้ เรียกลูกค้าได้เยอะ แถมลูกค้าติดใจแน่นอน
+										<?php echo $row_product[0]['content']; ?>
 
 									</p>
+									<?php
+
+									function getYoutubeEmbedUrl($url)
+									{
+										$shortUrlRegex = '/youtu.be\/([a-zA-Z0-9_]+)\??/i';
+										$longUrlRegex = '/youtube.com\/((?:embed)|(?:watch))((?:\?v\=)|(?:\/))(\w+)/i';
+
+										if (preg_match($longUrlRegex, $url, $matches)) {
+											$youtube_id = $matches[count($matches) - 1];
+										}
+
+										if (preg_match($shortUrlRegex, $url, $matches)) {
+											$youtube_id = $matches[count($matches) - 1];
+										}
+										return 'https://www.youtube.com/embed/' . $youtube_id;
+									}
+
+									$url = $row_product[0]['link_video'];
+									$embeded_url = getYoutubeEmbedUrl($url);
+
+									// echo $embeded_url;
+									?>
 
 
 								</div>
 								<div class="tab-pane p-4 fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
 									<div class="ratio ratio-16x9">
-										<iframe src="https://www.youtube.com/embed/Dr6JVIs6hgc?rel=0" title="YouTube video" allowfullscreen></iframe>
+										<iframe src="<?php echo $embeded_url ?>" title="YouTube video" allowfullscreen></iframe>
 									</div>
 
 
 								</div>
 								<div class="tab-pane p-4 fade text-center" id="contact" role="tabpanel" aria-labelledby="contact-tab">
 
-									<a href="upload/pdf.pdf" target="_blank" class="btn btn-warning btn-lg mt-4"><span class="material-icons-outlined">
-										file_download
-									</span> ดาวน์โหลดแคตตาล็อค</a>
+									<a href="<?php echo $row_product[0]['link_catalog']; ?>" target="_blank" class="btn btn-warning btn-lg mt-4"><span class="material-icons-outlined">
+											file_download
+										</span> <?php if (isset($_GET['lang'])) {
+													if ($_GET['lang'] == "en") {
+														echo 'Download Catalog';
+													} else {
+														echo 'ดาวน์โหลดแคตตาล็อค';
+													}
+												} else {
+													echo "ดาวน์โหลดแคตตาล็อค";
+												} ?></a>
 								</div>
 							</div>
 
@@ -230,7 +318,7 @@
 
 
 
-	<?php include("footer.php");?>
+	<?php include("footer.php"); ?>
 
 
 	<script src="js/bootstrap.bundle.min.js?v=1001"></script>
@@ -238,7 +326,7 @@
 	<script src="js/coreNavigation.js?v=1001"></script>
 	<script>
 		$('nav').coreNavigation({
-			menuPosition: "center", 
+			menuPosition: "center",
 			container: true,
 			responsideSlide: true, // true or false
 			mode: 'sticky',
@@ -260,13 +348,12 @@
 	</script>
 
 	<script type="text/javascript">
-
-		'use strict'; 
-		var $window = $(window); 
+		'use strict';
+		var $window = $(window);
 		$window.on({
-			'load': function () {
+			'load': function() {
 
-				/* Preloader */ 
+				/* Preloader */
 				$('.spinner').fadeOut(1500);
 
 
@@ -274,57 +361,50 @@
 			},
 
 		});
-  function myFunctionDos() {
-            var x = document.getElementById("myDIV");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-        }
+
+		function myFunctionDos() {
+			var x = document.getElementById("myDIV");
+			if (x.style.display === "none") {
+				x.style.display = "block";
+			} else {
+				x.style.display = "none";
+			}
+		}
 	</script>
 
 	<script src="js/jquery.youtubebackground.js?v=1001"></script>
 
 	<script type="text/javascript">
-
-        //======= Youtube Video Background ========//
+		//======= Youtube Video Background ========//
 		$('.video-bg').YTPlayer({
 			fitToBackground: true,
-            videoId: 'Dr6JVIs6hgc'//Set Your Youtube Video ID
-          });
+			videoId: 'Dr6JVIs6hgc' //Set Your Youtube Video ID
+		});
+	</script>
+	<script type="text/javascript" src="js/slick.min.js?v=1001"></script>
+	<script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
 
 
 
+	<script type="text/javascript" src="js/main.js?v=1001"></script>
+	<!-- Vendors -->
+	<script src="js/jarallax.min.js?v=1001"></script>
+	<!-- Template Functions -->
+	<script src="js/functions.js?v=1001"></script>
 
+	<script src="js/lazyload.js?v=1001"></script>
+	<script src="js/main.js?v=1001"></script>
+	<script src="js/jquery.elevatezoom.js?v=1001"></script>
 
+	<script src="js/jquery.chocolat.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('.view-seventh a').Chocolat();
+			$('.view-seventh2 a').Chocolat();
+			$('.view-seventh3 a').Chocolat();
+		});
+	</script>
+</body>
+</body>
 
-
-
-        </script>
-        <script type="text/javascript" src="js/slick.min.js?v=1001"></script>
-        <script type="text/javascript" src="js/slick-custom.js?v=1001"></script>
-
-
-
-        <script type="text/javascript" src="js/main.js?v=1001"></script>
-        <!-- Vendors -->
-        <script src="js/jarallax.min.js?v=1001"></script>
-        <!-- Template Functions -->
-        <script src="js/functions.js?v=1001"></script>
-
-        <script  src="js/lazyload.js?v=1001"></script>
-        <script src="js/main.js?v=1001"></script>
-        <script src="js/jquery.elevatezoom.js?v=1001"></script>
-
-        <script src="js/jquery.chocolat.js"></script>
-        <script type="text/javascript">
-        	$(function() {
-        		$('.view-seventh a').Chocolat();
-        		$('.view-seventh2 a').Chocolat();
-        		$('.view-seventh3 a').Chocolat();
-        	});
-        </script>
-      </body>
-    </body>
-    </html>
+</html>

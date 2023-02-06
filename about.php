@@ -1,3 +1,30 @@
+<?php
+require_once('webpanelcw/config/yoyi_db.php');
+error_reporting(0);
+if (!isset($_SESSION)) {
+    session_start();
+}
+
+
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'];
+    if ($lang == "en") {
+        $stmt = $conn->prepare("SELECT * FROM about_en");
+        $stmt->execute();
+        $row_about = $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM about");
+        $stmt->execute();
+        $row_about = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+} else {
+    $stmt = $conn->prepare("SELECT * FROM about");
+    $stmt->execute();
+    $row_about = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en" class="desktop">
 <head>
@@ -83,7 +110,23 @@
 
 
 					<div class="mb-5 text-center">
-						<h2><span class="text-warning">เกี่ยวกับ</span>เรา</h2>
+						<h2><span class="text-warning"><?php if (isset($_GET['lang'])) {
+                                                        if ($_GET['lang'] == "en") {
+                                                            echo 'About';
+                                                        } else {
+                                                            echo 'เกี่ยวกับ';
+                                                        }
+                                                    } else {
+                                                        echo "เกี่ยวกับ";
+                                                    } ?></span><?php if (isset($_GET['lang'])) {
+                                                        if ($_GET['lang'] == "en") {
+                                                            echo 'Us';
+                                                        } else {
+                                                            echo 'เรา';
+                                                        }
+                                                    } else {
+                                                        echo "เรา";
+                                                    } ?></h2>
 					</div>
 
 
@@ -91,13 +134,10 @@
 
 
 
-					<p>ปรัชญาการดำเนินธุรกิจของ Yo Yi Foods Co, Ltd. คือการสร้างภาพลักษณ์ที่ดีและผลิตภัณฑ์คุณภาพสูง ยึดมั่นในสุขอนามัยของอาหารและความปลอดภัยของอาหารของผู้บริโภค</p>
-<p>บริษัทได้รับใบรับรองสากล HACCP, ISO22000, HALAL และยังคงได้รับใบรับรองอาหารเกี่ยวกับคุณภาพอาหารอีกมากมายอย่างต่อเนื่อง เป้าหมายของเราคือการพยายามปรับปรุงและควบคุมคุณภาพและของผลิตภัณฑ์ เติบโตและก้าวหน้าไปพร้อมกับลูกค้า เพื่อให้ผู้บริโภคได้รับสินค้าที่ปลอดภัย ถูกสุขลักษณะ ดีต่อสุขภาพ และรสชาติอร่อยอีกด้วย</p>
-<p>บริษัทปฏิบัติตามแนวคิดการควบคุมคุณภาพ 5 ประการ เลือกใช้วัตถุดิบอย่างพิถีพิถัน เลือกใช้วัสดุบรรจุภัณฑ์ที่มีคุณภาพ ทำการทดสอบชิมสินค้าเป็นประจำ และตรวจสอบผลิตภัณฑ์เป็นประจำ
-</p>
+					<p><?php echo $row_about['content'] ?></p>
 
 
-					<img class="img-fluid" src="images/about.jpg">
+					<img class="img-fluid" src="webpanelcw/uploads/upload_about/<?php echo $row_about['img']; ?>">
 
 
 				</div>
