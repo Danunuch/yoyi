@@ -1,26 +1,33 @@
 <?php
 require_once('webpanelcw/config/yoyi_db.php');
-// error_reporting(0);
+error_reporting(0);
 if (!isset($_SESSION)) {
 	session_start();
 }
 
+
+if (isset($_GET['cata_id'])) {
+	$cata_id = $_GET['cata_id'];
+}
 //Query Detail
 if (isset($_GET['lang'])) {
 	$lang = $_GET['lang'];
 	if ($lang == "en") {
-		$stmt = $conn->prepare("SELECT * FROM cook_detail_en");
+		$stmt = $conn->prepare("SELECT * FROM cook_detail_en WHERE id = :id");
+		$stmt->bindParam(':id', $cata_id);
 		$stmt->execute();
-		$row_cook_detail = $stmt->fetchAll();
+		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 	} else if ($lang == "th") {
-		$stmt = $conn->prepare("SELECT * FROM cook_detail");
+		$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE id = :id");
+		$stmt->bindParam(':id', $cata_id);
 		$stmt->execute();
-		$row_cook_detail = $stmt->fetchAll();
+		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 } else {
-	$stmt = $conn->prepare("SELECT * FROM cook_detail");
+	$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE id = :id");
+	$stmt->bindParam(':id', $cata_id);
 	$stmt->execute();
-	$row_cook_detail = $stmt->fetchAll();
+	$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 
@@ -198,7 +205,6 @@ if (isset($_GET['lang'])) {
 										$a->bindParam(":id", $row_type_cook[$i]['type_id']);
 										$a->execute();
 										$row_a = $a->fetchAll();
-										
 									} else  {
 										$a = $conn->prepare("SELECT * FROM catalog_cook WHERE type_id = :id");
 										$a->bindParam(":id", $row_type_cook[$i]['type_id']);
@@ -249,11 +255,15 @@ if (isset($_GET['lang'])) {
 
 											?>
 
-												<li><a href='cooking-detail?catasub_id=<?php echo $row_a[$j]['id'] ?><?php if ($lang == 'en') {
-																													echo '&lang=en';
-																												} else {
-																													echo '&lang=th';
-																												} ?>'><?php echo $row_a[$j]['catalog_name']; ?></a></li>
+												<li><a href='cooking?cata_id=<?php echo $row_a[$j]['id'] ?><?php if (isset($_GET['lang'])) {
+																															if ($_GET['lang'] == "en") {
+																																echo '&lang=en';
+																															} else {
+																																echo '&lang=th';
+																															}
+																														} else {
+																															echo "";
+																														} ?>'><?php echo $row_a[$j]['catalog_name']; ?></a></li>
 											<?php } ?>
 										</ul>
 
@@ -293,68 +303,68 @@ if (isset($_GET['lang'])) {
 
 						<div class="cooking-ol">
 							<ol>
-								<li <?php if ($row_cook_detail[1]['content1'] == "") {
+								<li <?php if ($row_cook_detail['content1'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content1']; ?></li>
+									} ?>><?php echo $row_cook_detail['content1']; ?></li>
 
 
-								<li <?php if ($row_cook_detail[1]['content2'] == "") {
+								<li <?php if ($row_cook_detail['content2'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content2']; ?></li>
+									} ?>><?php echo $row_cook_detail['content2']; ?></li>
 
 
-								<li <?php if ($row_cook_detail[1]['content3'] == "") {
+								<li <?php if ($row_cook_detail['content3'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content3']; ?></li>
+									} ?>><?php echo $row_cook_detail['content3']; ?></li>
 
 
-								<li <?php if ($row_cook_detail[1]['content4'] == "") {
+								<li <?php if ($row_cook_detail['content4'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content4']; ?></li>
+									} ?>><?php echo $row_cook_detail['content4']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content5'] == "") {
+								<li <?php if ($row_cook_detail['content5'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content5']; ?></li>
+									} ?>><?php echo $row_cook_detail['content5']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content6'] == "") {
+								<li <?php if ($row_cook_detail['content6'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content6']; ?></li>
+									} ?>><?php echo $row_cook_detail['content6']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content7'] == "") {
+								<li <?php if ($row_cook_detail['content7'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content7']; ?></li>
+									} ?>><?php echo $row_cook_detail['content7']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content8'] == "") {
+								<li <?php if ($row_cook_detail['content8'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content8']; ?></li>
+									} ?>><?php echo $row_cook_detail['content8']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content9'] == "") {
+								<li <?php if ($row_cook_detail['content9'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content9']; ?></li>
+									} ?>><?php echo $row_cook_detail['content9']; ?></li>
 
-								<li <?php if ($row_cook_detail[1]['content10'] == "") {
+								<li <?php if ($row_cook_detail['content10'] == "") {
 										echo "style='display:none;'";
 									} else {
 										echo "";
-									} ?>><?php echo $row_cook_detail[1]['content10']; ?></li>
+									} ?>><?php echo $row_cook_detail['content10']; ?></li>
 
 							</ol>
 

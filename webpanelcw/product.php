@@ -39,9 +39,33 @@ if (isset($_POST['add_product'])) {
                     $add_product->bindParam(":link_catalog", $link_catalog);
                     $add_product->bindParam(":status", $status);
                     $add_product->execute();
+                    $id_product = $conn->lastInsertId();
+                }
+            }
+        }
 
-                    if ($add_product) {
-                        echo "<script>
+        foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+            $file_names = $_FILES['img']['name'];
+
+            $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+            $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+            if (in_array($extension, $supported)) {
+                $new_name = rand() . '.' . "webp";
+                if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_product/" . $new_name)) {
+                    $sql = "INSERT INTO product_img (img, id_product) VALUES(:img, :id_product)";
+                    $upload_img = $conn->prepare($sql);
+                    $params = array(
+                        'img' => $new_name,
+                        'id_product' => $id_product
+                    );
+                    $upload_img->execute($params);
+                }
+            } else {
+                echo "<script>alert('ไม่รองรับนามสกุลไฟล์นี้')</script>";
+            }
+        }
+        if ($add_product) {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'เพิ่มผลิตภัณฑ์สำเร็จ',
@@ -51,9 +75,9 @@ if (isset($_POST['add_product'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
-                    } else {
-                        echo "<script>
+            echo "<meta http-equiv='refresh' content='1.5;url=product'>";
+        } else {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -63,10 +87,7 @@ if (isset($_POST['add_product'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=product'>";
-                    }
-                }
-            }
+            echo "<meta http-equiv='refresh' content='1.5;url=product'>";
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -75,6 +96,28 @@ if (isset($_POST['add_product'])) {
 
 
 //edit product
+
+if (isset($_GET['product_id'])) {
+    $id_product = $_GET['product_id'];
+
+    $stmt = $conn->prepare("SELECT * FROM product WHERE id_product = :id_product");
+    $stmt->bindParam(":id_product", $product_id);
+    $stmt->execute();
+    $row_product = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+if (isset($_POST['del-img'])) {
+    $img_id = $_POST['del-img'];
+
+    $delete_img = $conn->prepare("DELETE FROM product_img WHERE id = :id");
+    $delete_img->bindParam(":id", $img_id);
+    $delete_img->execute();
+
+    if ($delete_img) {
+        echo "<meta http-equiv='refresh' content='0;url=product?product_id=$id_product'>";
+    }
+}
+
 if (isset($_POST['edit_product'])) {
     $product_id = $_POST['product_id'];
     $img_cover = $_FILES['img_cover'];
@@ -144,7 +187,25 @@ if (isset($_POST['edit_product'])) {
         $edit_product->bindParam(":status", $status);
         $edit_product->bindParam(":id", $product_id);
         $edit_product->execute();
+    }
+    foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+        $file_names = $_FILES['img']['name'];
 
+        $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+        $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+        if (in_array($extension, $supported)) {
+            $new_name = rand() . '.' . "webp";
+            if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_product/" . $new_name)) {
+                $sql = "INSERT INTO product_img (img, id_product) VALUES(:img, :id_product)";
+                $upload_img = $conn->prepare($sql);
+                $params = array(
+                    'img' => $new_name,
+                    'id_product' => $product_id
+                );
+                $upload_img->execute($params);
+            }
+        }
+    }
         if ($edit_product) {
             echo "<script>
             $(document).ready(function() {
@@ -171,7 +232,7 @@ if (isset($_POST['edit_product'])) {
             echo "<meta http-equiv='refresh' content='1.5;url=product'>";
         }
     }
-}
+
 
 //change status
 if (isset($_POST['change-status'])) {
@@ -429,6 +490,34 @@ $row_product = $product->fetchAll();
                                                                             <h6>Link catalog</h6>
                                                                             <input type="text" name="link_catalog" value="<?php echo $row_product['link_catalog']; ?>" class="form-control">
                                                                         </div>
+
+                                                                        <div class="content">
+                                                                            <div class="content-img">
+                                                                                <span id="upload-img">Upload Image</span>
+                                                                                <div class="group-pos">
+                                                                                    <input type="file" name="img[]" id="imgInput4" onchange="preview_image();" class="form-control" multiple>
+                                                                                    <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                                                </div>
+                                                                                <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                                                <div id="gallery">
+                                                                                    <?php
+
+                                                                                    $img = $conn->prepare("SELECT * FROM product_img WHERE id_product = :id_product");
+                                                                                    $img->bindParam(":id_product", $row_product['id_product']);
+                                                                                    $img->execute();
+                                                                                    $row_img = $img->fetchAll();
+
+                                                                                    for ($i = 0; $i < count($row_img); $i++) { ?>
+                                                                                        <div class="box-edit-img">
+                                                                                            <span class="del-edit-img"><button type="submit" onclick="return confirm('Do you want to delete this image?')" name="del-img" value="<?php echo $row_img[$i]['id'] ?>" class="btn-edit-del-img"><i class="bi bi-x-lg"></button></i></span>
+                                                                                            <img class='previewImg' id='edit-img' src="uploads/upload_product/<?php echo $row_img[$i]['img'] ?>" alt="">
+                                                                                        </div>
+                                                                                    <?php  }
+                                                                                    ?>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
                                                                     </div>
                                                                     <div class="mt-3">
                                                                         <button class="btn" name="edit_product" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
@@ -522,6 +611,17 @@ $row_product = $product->fetchAll();
                                                 <h6>Link catalog</h6>
                                                 <input type="text" name="link_catalog" class="form-control">
                                             </div>
+                                            <div class="content">
+                                                <div class="content-img">
+                                                    <span id="upload-img">Content Image</span>
+                                                    <div class="group-pos">
+                                                        <input type="file" name="img[]" id="imgInput3" onchange="preview_image_add();" class="form-control" multiple>
+                                                        <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                    </div>
+                                                    <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                    <div id="gallery_add"></div>
+                                                </div>
+                                            </div>
 
                                         </div>
                                         <div class="mt-3">
@@ -541,6 +641,23 @@ $row_product = $product->fetchAll();
             <?php include('footer.php'); ?>
         </div>
     </div>
+    <script>
+        function preview_image_add() {
+            var total_file = document.getElementById("imgInput3").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery_add').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
+
+    <script>
+        function preview_image() {
+            var total_file = document.getElementById("imgInput4").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
     <script>
         let imgInput1 = document.getElementById('imgInput');
         let previewImg = document.getElementById('previewImg');
@@ -586,12 +703,21 @@ $row_product = $product->fetchAll();
     </script>
     <script>
         $(document).ready(function() {
-            $('#reset').click(function() {
+            $('#reset2').click(function() {
                 $('#imgInput').val(null);
-                $('#previewImg').attr("src", "");
-
+                $('.previewImg').attr("src", "");
+                $('.previewImg').addClass('none');
+                $('.box-edit-img').addClass('none');
             });
-
+            $('#reset1').click(function() {
+                $('#imgInput-cover').val(null);
+                $('#previewImg-cover').attr("src", "");
+                // $('.previewImg').addClass('none');
+                // $('.box-edit-img').addClass('none');
+            });
+            $('#imgout').click(function() {
+                $('#imgInput').val(null);
+            });
 
         });
     </script>

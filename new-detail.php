@@ -152,7 +152,7 @@ if (isset($_GET['lang'])) {
 						<?php for($i=0;$i<count($row_news_img);$i++){ ?> 
 							<div class="col-6 col-md-4">
 								<div class="view-seventh mb-4">
-									<a href="upload/cooking0<?=$i?>.jpg" class="b-link-stripe b-animate-go thickbox" title="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">
+									<a href="webpanelcw/uploads/upload_news/<?php echo $row_news_img[$i]['img']; ?>" class="b-link-stripe b-animate-go thickbox" title="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">
 										<div class="box-gallery">
 											<div class="bg-img">
 												<img class="img-fluid" src="webpanelcw/uploads/upload_news/<?php echo $row_news_img[$i]['img']; ?>" alt="คำชี้แจงเกี่ยวกับข้อกำหนด GMP ล่าสุด">

@@ -355,8 +355,8 @@
     }
 
     .content-img {
-        width: 35%;
-        height: 400px;
+        width: 60%;
+        height: 415px;
         border: 2px solid #ccc;
         padding: 10px;
         margin: 10px auto;
@@ -397,7 +397,35 @@
         color: #c3412c;
     }
 
+    #gallery_edit {
+        width: 80%;
+        border-radius: 10px;
+        height: 250px;
+        display: grid;
+        grid-template-columns: auto auto;
+        margin: 10px auto;
+        border: 2px solid #ccc;
+        background-color: #e6e6e6;
+        position: absolute;
+        left: 0;
+        right: 0;
+        overflow: auto;
+    }
 
+    #gallery_add {
+        width: 80%;
+        border-radius: 10px;
+        height: 250px;
+        display: grid;
+        grid-template-columns: auto auto;
+        margin: 10px auto;
+        border: 2px solid #ccc;
+        background-color: #e6e6e6;
+        position: absolute;
+        left: 0;
+        right: 0;
+        overflow: auto;
+    }
 
     #gallery {
         width: 80%;

@@ -4,7 +4,7 @@
 <?php
 require_once('config/yoyi_db.php');
 session_start();
-error_reporting(0);
+// error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
     echo "<script>alert('Please Login')</script>";
     echo "<meta http-equiv='refresh' content='0;url=index'>";
@@ -16,8 +16,36 @@ $data_detail = $conn->prepare("SELECT * FROM cook_detail");
 $data_detail->execute();
 $row_detail = $data_detail->fetchAll();
 
+$data_detail_img = $conn->prepare("SELECT * FROM cook_detail_img");
+$data_detail_img->execute();
+$row_cook_detail_img = $data_detail_img->fetchAll();
+
+
 
 //Edit cook detail
+
+
+if (isset($_GET['detail_id'])) {
+    $detail_id = $_GET['detail_id'];
+
+    $stmt = $conn->prepare("SELECT * FROM news_en WHERE detail_id = :detail_id");
+    $stmt->bindParam(":detail_id", $detail_id);
+    $stmt->execute();
+    $row_detail = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+if (isset($_POST['del-img'])) {
+    $img_id = $_POST['del-img'];
+
+    $delete_img = $conn->prepare("DELETE FROM news_img WHERE id = :id");
+    $delete_img->bindParam(":id", $img_id);
+    $delete_img->execute();
+
+    if ($delete_img) {
+        echo "<meta http-equiv='refresh' content='0;url=news_en?news_id=$id_news'>";
+    }
+}
+
 if (isset($_POST['edit_detail_cook'])) {
     $detail_id = $_POST['detail_id'];
     $img_cover = $_FILES['img_cover_edit'];
@@ -122,6 +150,24 @@ if (isset($_POST['edit_detail_cook'])) {
         $edit_detail->bindParam(":detail_id", $detail_id);
         $edit_detail->execute();
 
+        foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+            $file_names = $_FILES['img']['name'];
+
+            $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+            $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+            if (in_array($extension, $supported)) {
+                $new_name = rand() . '.' . "webp";
+                if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_cooking/" . $new_name)) {
+                    $sql = "INSERT INTO cook_detail_img (img, detail_id) VALUES(:img, :detail_id)";
+                    $upload_img = $conn->prepare($sql);
+                    $params = array(
+                        'img' => $new_name,
+                        'detail_id' => $detail_id
+                    );
+                    $upload_img->execute($params);
+                }
+            }
+        }
         if ($edit_detail) {
             echo "<script>
             $(document).ready(function() {
@@ -194,9 +240,33 @@ if (isset($_POST['add_detail_cook'])) {
                     $add_detail->bindParam(":type_id", $type_id);
                     $add_detail->bindParam(":id", $id);
                     $add_detail->execute();
+                    $detail_id = $conn->lastInsertId();
+                }
+            }
+        }
 
-                    if ($add_detail) {
-                        echo "<script>
+        foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+            $file_names = $_FILES['img']['name'];
+
+            $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+            $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+            if (in_array($extension, $supported)) {
+                $new_name = rand() . '.' . "webp";
+                if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_cooking/" . $new_name)) {
+                    $sql = "INSERT INTO cook_detail_img (img, detail_id) VALUES(:img, :detail_id)";
+                    $upload_img = $conn->prepare($sql);
+                    $params = array(
+                        'img' => $new_name,
+                        'detail_id' => $detail_id
+                    );
+                    $upload_img->execute($params);
+                }
+            } else {
+                echo "<script>alert('ไม่รองรับนามสกุลไฟล์นี้')</script>";
+            }
+        }
+        if ($add_detail) {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'เพิ่มข้อมูลสำเร็จ',
@@ -206,9 +276,9 @@ if (isset($_POST['add_detail_cook'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
-                    } else {
-                        echo "<script>
+            echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
+        } else {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -218,10 +288,7 @@ if (isset($_POST['add_detail_cook'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
-                    }
-                }
-            }
+            echo "<meta http-equiv='refresh' content='1.5;url=cook_detail'>";
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -454,6 +521,35 @@ if (isset($_POST['delete_all'])) {
                                                                                         <img width="80%" id="previewImg" src="uploads/upload_cooking/<?php echo $row_detail['img_cover'] ?>">
                                                                                     </div>
                                                                                 </div>
+
+
+                                                                                <div class="content">
+                                                                                    <div class="content-img">
+                                                                                        <span id="upload-img">Upload Image</span>
+                                                                                        <div class="group-pos">
+                                                                                            <input type="file" name="img[]" id="imgInput4" onchange="preview_image();" class="form-control" multiple>
+                                                                                            <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                                                        </div>
+                                                                                        <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                                                        <div id="gallery">
+                                                                                            <?php
+
+                                                                                            $img = $conn->prepare("SELECT * FROM cook_detail_img WHERE detail_id = :detail_id");
+                                                                                            $img->bindParam(":detail_id", $row_cook_detail_img['detail_id']);
+                                                                                            $img->execute();
+                                                                                            $row_img = $img->fetchAll();
+
+                                                                                            for ($i = 0; $i < count($row_img); $i++) { ?>
+                                                                                                <div class="box-edit-img">
+                                                                                                    <span class="del-edit-img"><button type="submit" onclick="return confirm('Do you want to delete this image?')" name="del-img" value="<?php echo $row_img[$i]['id'] ?>" class="btn-edit-del-img"><i class="bi bi-x-lg"></button></i></span>
+                                                                                                    <img class='previewImg' id='edit-img' src="uploads/upload_cooking/<?php echo $row_img[$i]['img'] ?>" alt="">
+                                                                                                </div>
+                                                                                            <?php  }
+                                                                                            ?>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
                                                                             </div>
 
                                                                         </div>
@@ -605,6 +701,19 @@ if (isset($_POST['delete_all'])) {
                                                     </div>
                                                 </div>
 
+                                                <div class="content">
+                                                    <div class="content-img">
+                                                        <span id="upload-img">Content Image</span>
+                                                        <div class="group-pos">
+                                                            <input type="file" name="img[]" id="imgInput3" onchange="preview_image_add();" class="form-control" multiple>
+                                                            <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                        </div>
+                                                        <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                        <div id="gallery_add"></div>
+                                                    </div>
+
+                                                </div>
+
                                             </div>
 
                                         </div>
@@ -625,6 +734,23 @@ if (isset($_POST['delete_all'])) {
             <?php include('footer.php'); ?>
         </div>
     </div>
+    <script>
+        function preview_image_add() {
+            var total_file = document.getElementById("imgInput3").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery_add').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
+
+    <script>
+        function preview_image() {
+            var total_file = document.getElementById("imgInput4").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
     <script>
         let imgInput1 = document.getElementById('imgInput');
         let previewImg = document.getElementById('previewImg');
@@ -670,12 +796,21 @@ if (isset($_POST['delete_all'])) {
     </script>
     <script>
         $(document).ready(function() {
-            $('#reset').click(function() {
+            $('#reset2').click(function() {
                 $('#imgInput').val(null);
-                $('#previewImg').attr("src", "");
-
+                $('.previewImg').attr("src", "");
+                $('.previewImg').addClass('none');
+                $('.box-edit-img').addClass('none');
             });
-
+            $('#reset1').click(function() {
+                $('#imgInput-cover').val(null);
+                $('#previewImg-cover').attr("src", "");
+                // $('.previewImg').addClass('none');
+                // $('.box-edit-img').addClass('none');
+            });
+            $('#imgout').click(function() {
+                $('#imgInput').val(null);
+            });
 
         });
     </script>

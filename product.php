@@ -5,20 +5,23 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
-
+$status = "on";
 if (isset($_GET['lang'])) {
     $lang = $_GET['lang'];
     if ($lang == "en") {
-        $stmt = $conn->prepare("SELECT * FROM product_en");
+        $stmt = $conn->prepare("SELECT * FROM product_en WHERE status = :status");
+		$stmt->bindParam(":status" , $status);
         $stmt->execute();
         $row_product = $stmt->fetchAll();
     } else {
-        $stmt = $conn->prepare("SELECT * FROM product");
+        $stmt = $conn->prepare("SELECT * FROM product WHERE status = :status");
+		$stmt->bindParam(":status" , $status);
         $stmt->execute();
         $row_product = $stmt->fetchAll();
     }
 } else {
-    $stmt = $conn->prepare("SELECT * FROM product");
+    $stmt = $conn->prepare("SELECT * FROM product WHERE status = :status");
+	$stmt->bindParam(":status" , $status);
     $stmt->execute();
     $row_product = $stmt->fetchAll();
 }

@@ -34,8 +34,33 @@ if (isset($_POST['add_news'])) {
                     $add_news->bindParam(":status", $status);
                     $add_news->execute();
 
-                    if ($add_news) {
-                        echo "<script>
+                    $id_news = $conn->lastInsertId();
+                }
+            }
+        }
+
+        foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+            $file_names = $_FILES['img']['name'];
+
+            $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+            $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+            if (in_array($extension, $supported)) {
+                $new_name = rand() . '.' . "webp";
+                if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_news/" . $new_name)) {
+                    $sql = "INSERT INTO news_img (img, id_news) VALUES(:img, :id_news)";
+                    $upload_img = $conn->prepare($sql);
+                    $params = array(
+                        'img' => $new_name,
+                        'id_news' => $id_news
+                    );
+                    $upload_img->execute($params);
+                }
+            } else {
+                echo "<script>alert('ไม่รองรับนามสกุลไฟล์นี้')</script>";
+            }
+        }
+        if ($add_news) {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'เพิ่มข่าวสารสำเร็จ',
@@ -45,9 +70,9 @@ if (isset($_POST['add_news'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-                    } else {
-                        echo "<script>
+            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
+        } else {
+            echo "<script>
                             $(document).ready(function() {
                                 Swal.fire({
                                     text: 'มีบางอย่างผิดพลาด',
@@ -57,18 +82,36 @@ if (isset($_POST['add_news'])) {
                                 });
                             })
                             </script>";
-                        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-                    }
-                }
-            }
+            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
 }
 
-
 //edit news
+if (isset($_GET['news_id'])) {
+    $id_news = $_GET['news_id'];
+
+    $stmt = $conn->prepare("SELECT * FROM news_en WHERE id_news = :id_news");
+    $stmt->bindParam(":id_news", $news_id);
+    $stmt->execute();
+    $row_news = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+if (isset($_POST['del-img'])) {
+    $img_id = $_POST['del-img'];
+
+    $delete_img = $conn->prepare("DELETE FROM news_img WHERE id = :id");
+    $delete_img->bindParam(":id", $img_id);
+    $delete_img->execute();
+
+    if ($delete_img) {
+        echo "<meta http-equiv='refresh' content='0;url=news_en?news_id=$id_news'>";
+    }
+}
+
+
 if (isset($_POST['edit_news'])) {
     $news_id = $_POST['news_id'];
     $img_cover = $_FILES['img_cover'];
@@ -124,9 +167,27 @@ if (isset($_POST['edit_news'])) {
         $edit_news->bindParam(":content", $content);
         $edit_news->bindParam(":id", $news_id);
         $edit_news->execute();
+    }
+    foreach ($_FILES['img']['tmp_name'] as $key => $value) {
+        $file_names = $_FILES['img']['name'];
 
-        if ($edit_news) {
-            echo "<script>
+        $extension = strtolower(pathinfo($file_names[$key], PATHINFO_EXTENSION));
+        $supported = array('jpg', 'jpeg', 'png', 'webp', 'mp4');
+        if (in_array($extension, $supported)) {
+            $new_name = rand() . '.' . "webp";
+            if (move_uploaded_file($_FILES['img']['tmp_name'][$key], "uploads/upload_news/" . $new_name)) {
+                $sql = "INSERT INTO news_img (img, id_news) VALUES(:img, :id_news)";
+                $upload_img = $conn->prepare($sql);
+                $params = array(
+                    'img' => $new_name,
+                    'id_news' => $news_id
+                );
+                $upload_img->execute($params);
+            }
+        }
+    }
+    if ($edit_news) {
+        echo "<script>
             $(document).ready(function() {
                 Swal.fire({
                     text: 'แก้ไขข้อมูลข่าวสารสำเร็จ',
@@ -136,9 +197,9 @@ if (isset($_POST['edit_news'])) {
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-        } else {
-            echo "<script>
+        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
+    } else {
+        echo "<script>
             $(document).ready(function() {
                 Swal.fire({
                     text: 'มีบางอย่างผิดพลาด',
@@ -148,10 +209,10 @@ if (isset($_POST['edit_news'])) {
                 });
             })
             </script>";
-            echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
-        }
+        echo "<meta http-equiv='refresh' content='1.5;url=news_en'>";
     }
 }
+
 
 //change status
 if (isset($_POST['change-status'])) {
@@ -280,7 +341,7 @@ $row_news = $news->fetchAll();
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">ข่าวสาร</h4>
                         <div class="btn-lang">
-                            <a href="news_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="news" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
                         <script>
                             tinymce.init({
@@ -396,6 +457,34 @@ $row_news = $news->fetchAll();
                                                                             <textarea name="content"><?php echo $row_news['content'] ?></textarea>
                                                                         </div>
 
+                                                                        <div class="content">
+                                                                            <div class="content-img">
+                                                                                <span id="upload-img">Upload Image</span>
+                                                                                <div class="group-pos">
+                                                                                    <input type="file" name="img[]" id="imgInput4" onchange="preview_image();" class="form-control" multiple>
+                                                                                    <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                                                </div>
+                                                                                <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                                                <div id="gallery">
+                                                                                    <?php
+
+                                                                                    $img = $conn->prepare("SELECT * FROM news_img WHERE id_news = :id_news");
+                                                                                    $img->bindParam(":id_news", $row_news['id_news']);
+                                                                                    $img->execute();
+                                                                                    $row_img = $img->fetchAll();
+
+                                                                                    for ($i = 0; $i < count($row_img); $i++) { ?>
+                                                                                        <div class="box-edit-img">
+                                                                                            <span class="del-edit-img"><button type="submit" onclick="return confirm('Do you want to delete this image?')" name="del-img" value="<?php echo $row_img[$i]['id'] ?>" class="btn-edit-del-img"><i class="bi bi-x-lg"></button></i></span>
+                                                                                            <img class='previewImg' id='edit-img' src="uploads/upload_news/<?php echo $row_img[$i]['img'] ?>" alt="">
+                                                                                        </div>
+                                                                                    <?php  }
+                                                                                    ?>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+
                                                                     </div>
                                                                     <div class="mt-3">
                                                                         <button class="btn" name="edit_news" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
@@ -420,14 +509,14 @@ $row_news = $news->fetchAll();
                                     <li <?php if ($page == 1) {
                                             echo "class='page-item disabled'";
                                         }  ?>>
-                                        <a class="page-link" href="news?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
+                                        <a class="page-link" href="news_en?page=<?php echo $page - 1 ?>" tabindex="-1" aria-disabled="true"><span class="material-icons"></span>ก่อนหน้า</a>
                                     </li>
 
                                     <?php
                                     for ($i = 1; $i <= $total_page; $i++) { ?>
                                         <li <?php if ($page == $i) {
                                                 echo "class='page-item active'";
-                                            } ?>><a class="page-link" href="news?page=<?php echo $i ?>"><?php echo $i ?></a></li>
+                                            } ?>><a class="page-link" href="news_en?page=<?php echo $i ?>"><?php echo $i ?></a></li>
                                     <?php   }
                                     ?>
 
@@ -435,7 +524,7 @@ $row_news = $news->fetchAll();
                                     <li <?php if ($page == $total_page) {
                                             echo "class='page-item disabled'";
                                         } ?>>
-                                        <a class="page-link" href="news?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
+                                        <a class="page-link" href="news_en?page=<?php echo $page + 1 ?>">ถัดไป <span class="material-icons"></span></a>
                                     </li>
                                 </ul>
                             </div>
@@ -476,6 +565,19 @@ $row_news = $news->fetchAll();
                                                 <textarea name="content"></textarea>
                                             </div>
 
+                                            <div class="content">
+                                                <div class="content-img">
+                                                    <span id="upload-img">Content Image</span>
+                                                    <div class="group-pos">
+                                                        <input type="file" name="img[]" id="imgInput3" onchange="preview_image_add();" class="form-control" multiple>
+                                                        <button type="button" class="btn reset" id="reset2">Reset</button>
+                                                    </div>
+                                                    <span class="file-support">Only file are support ('jpg', 'jpeg', 'png', 'webp').</span>
+                                                    <div id="gallery_add"></div>
+                                                </div>
+
+                                            </div>
+
                                         </div>
                                         <div class="mt-3">
                                             <button class="btn" name="add_news" type="submit" style="background-color: #ff962d; color: #522206;">บันทึก</button>
@@ -494,6 +596,24 @@ $row_news = $news->fetchAll();
             <?php include('footer.php'); ?>
         </div>
     </div>
+
+    <script>
+        function preview_image_add() {
+            var total_file = document.getElementById("imgInput3").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery_add').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
+
+    <script>
+        function preview_image() {
+            var total_file = document.getElementById("imgInput4").files.length;
+            for (var i = 0; i < total_file; i++) {
+                $('#gallery').append("<div class='box-edit-img'>  <span class='del-edit-img'></span>  <img class='previewImg' id='edit-img' src='" + URL.createObjectURL(event.target.files[i]) + "'> </div>");
+            }
+        }
+    </script>
     <script>
         let imgInput1 = document.getElementById('imgInput');
         let previewImg = document.getElementById('previewImg');
@@ -539,12 +659,21 @@ $row_news = $news->fetchAll();
     </script>
     <script>
         $(document).ready(function() {
-            $('#reset').click(function() {
+            $('#reset2').click(function() {
                 $('#imgInput').val(null);
-                $('#previewImg').attr("src", "");
-
+                $('.previewImg').attr("src", "");
+                $('.previewImg').addClass('none');
+                $('.box-edit-img').addClass('none');
             });
-
+            $('#reset1').click(function() {
+                $('#imgInput-cover').val(null);
+                $('#previewImg-cover').attr("src", "");
+                // $('.previewImg').addClass('none');
+                // $('.box-edit-img').addClass('none');
+            });
+            $('#imgout').click(function() {
+                $('#imgInput').val(null);
+            });
 
         });
     </script>

@@ -370,11 +370,11 @@ if (isset($_GET['lang'])) {
 							<?php for ($i = 1; $i <= 2; $i++) { ?>
 
 								<div class="col-md-6">
-									<a class="item-cooking" href="cooking-detail?detail_id=<?php echo $row_cook_detail[$i]['detail_id']; ?>&<?php if (isset($_GET['lang'])) {
+									<a class="item-cooking" href="cooking-detail?detail_id=<?php echo $row_cook_detail[$i]['detail_id']; ?><?php if (isset($_GET['lang'])) {
 																														if ($_GET['lang'] == "en") {
-																															echo 'lang=en';
+																															echo '&lang=en';
 																														} else {
-																															echo 'lang=th';
+																															echo '&lang=th';
 																														}
 																													} else {
 																														echo "";
