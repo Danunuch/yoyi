@@ -7,11 +7,9 @@ if (!isset($_SESSION)) {
 
 
 
-// if (isset($_GET['detail_id'])) {
-// 	$detail = $_GET['detail_id'];
+if (isset($_GET['detail_id'])) {
+	$detail = $_GET['detail_id'];
 
-	if (isset($_GET['catasub_id'])) {
-		$catasub_id = $_GET['catasub_id'];
 	
 
 	//Query Detail
@@ -34,6 +32,13 @@ if (!isset($_SESSION)) {
 		$stmt->execute();
 		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
+
+
+		//Query cook Img
+		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE detail_id = :id");
+		$stmt_img->bindParam(":id", $detail);
+		$stmt_img->execute();
+		$row_cook_img = $stmt_img->fetchAll();
 }
 
 ?>
@@ -220,13 +225,13 @@ if (!isset($_SESSION)) {
 			<div class="row mt-4">
 
 
-				<?php for ($i = 4; $i <= 6; $i++) { ?>
+			<?php for ($i = 0; $i < count($row_cook_img); $i++) { ?>
 					<div class="col-6 col-md-4">
 						<div class="view-seventh mb-4">
-							<a href="upload/cooking0<?= $i ?>.jpg" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
+							<a href="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
 								<div class="box-gallery">
 									<div class="bg-img">
-										<img class="img-fluid" src="upload/cooking0<?= $i ?>.jpg" alt="ชาเขียวไข่มุก">
+										<img class="img-fluid" src="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" alt="ชาเขียวไข่มุก">
 									</div>
 
 								</div>

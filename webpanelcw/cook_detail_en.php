@@ -4,7 +4,7 @@
 <?php
 require_once('config/yoyi_db.php');
 session_start();
-error_reporting(0);
+// error_reporting(0);
 if (!isset($_SESSION['admin_login'])) {
     echo "<script>alert('Please Login')</script>";
     echo "<meta http-equiv='refresh' content='0;url=index'>";
@@ -329,7 +329,7 @@ if (isset($_POST['delete_all'])) {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">รายละเอียด</h4>
                         <div class="btn-lang">
-                            <a href="cook_detail_en" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="cook_detail" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
                         <script>
                             tinymce.init({

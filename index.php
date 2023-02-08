@@ -232,14 +232,14 @@ if (isset($_GET['lang'])) {
 													} else {
 														echo "สินค้า";
 													} ?></span><?php if (isset($_GET['lang'])) {
-																				if ($_GET['lang'] == "en") {
-																					echo ' Products';
-																				} else {
-																					echo 'ของเรา';
-																				}
-																			} else {
-																				echo "ของเรา";
-																			} ?></h2>
+																	if ($_GET['lang'] == "en") {
+																		echo ' Products';
+																	} else {
+																		echo 'ของเรา';
+																	}
+																} else {
+																	echo "ของเรา";
+																} ?></h2>
 				</div>
 			</div>
 
@@ -248,24 +248,40 @@ if (isset($_GET['lang'])) {
 				<div class="container-xxl py-5">
 					<div class="row justify-content-center">
 						<div class="col-md-6 col-lg-4 text-end">
-							<a href="product" class="btn-product"><?php if (isset($_GET['lang'])) {
-																		if ($_GET['lang'] == "en") {
-																			echo 'Pearl';
-																		} else {
-																			echo 'เม็ดไข่มุก';
-																		}
-																	} else {
-																		echo "เม็ดไข่มุก";
-																	} ?></a>
-							<a class="rm-btn" href="product"><?php if (isset($_GET['lang'])) {
+							<a href="product?&<?php if (isset($_GET['lang'])) {
+													if ($_GET['lang'] == "en") {
+														echo 'lang=en';
+													} else {
+														echo 'lang=th';
+													}
+												} else {
+													echo "";
+												} ?>" class="btn-product"><?php if (isset($_GET['lang'])) {
+																				if ($_GET['lang'] == "en") {
+																					echo 'Pearl';
+																				} else {
+																					echo 'เม็ดไข่มุก';
+																				}
+																			} else {
+																				echo "เม็ดไข่มุก";
+																			} ?></a>
+							<a class="rm-btn" href="product?&<?php if (isset($_GET['lang'])) {
 																	if ($_GET['lang'] == "en") {
-																		echo 'Read More';
+																		echo 'lang=en';
 																	} else {
-																		echo 'อ่านเพิ่มเติม';
+																		echo 'lang=th';
 																	}
 																} else {
-																	echo "อ่านเพิ่มเติม";
-																} ?></a>
+																	echo "";
+																} ?>"><?php if (isset($_GET['lang'])) {
+																			if ($_GET['lang'] == "en") {
+																				echo 'Read More';
+																			} else {
+																				echo 'อ่านเพิ่มเติม';
+																			}
+																		} else {
+																			echo "อ่านเพิ่มเติม";
+																		} ?></a>
 						</div>
 					</div>
 				</div>
@@ -287,14 +303,14 @@ if (isset($_GET['lang'])) {
 															} else {
 																echo "ข่าว";
 															} ?></span><?php if (isset($_GET['lang'])) {
-																					if ($_GET['lang'] == "en") {
-																						echo 's';
-																					} else {
-																						echo 'สาร';
-																					}
-																				} else {
-																					echo "สาร";
-																				} ?></h2>
+																			if ($_GET['lang'] == "en") {
+																				echo 's';
+																			} else {
+																				echo 'สาร';
+																			}
+																		} else {
+																			echo "สาร";
+																		} ?></h2>
 						</div>
 
 
@@ -321,7 +337,7 @@ if (isset($_GET['lang'])) {
 										<div class="text-new">
 											<?php echo $row_news[$i]['title'] ?>
 											<?php echo $row_news[$i]['content'] ?>
-											
+
 											<span class="text-warning"><?php if (isset($_GET['lang'])) {
 																			if ($_GET['lang'] == "en") {
 																				echo 'Read More ++';
@@ -345,14 +361,14 @@ if (isset($_GET['lang'])) {
 
 						<div class="mb-5 text-center text-md-start">
 							<h2><span class="text-warning"><?php if (isset($_GET['lang'])) {
-																			if ($_GET['lang'] == "en") {
-																				echo 'Cooking';
-																			} else {
-																				echo 'เวลาทำ';
-																			}
-																		} else {
-																			echo "เวลาทำ";
-																		} ?></span><?php if (isset($_GET['lang'])) {
+																if ($_GET['lang'] == "en") {
+																	echo 'Cooking';
+																} else {
+																	echo 'เวลาทำ';
+																}
+															} else {
+																echo "เวลาทำ";
+															} ?></span><?php if (isset($_GET['lang'])) {
 																			if ($_GET['lang'] == "en") {
 																				echo ' Time';
 																			} else {
@@ -371,14 +387,14 @@ if (isset($_GET['lang'])) {
 
 								<div class="col-md-6">
 									<a class="item-cooking" href="cooking-detail?detail_id=<?php echo $row_cook_detail[$i]['detail_id']; ?><?php if (isset($_GET['lang'])) {
-																														if ($_GET['lang'] == "en") {
-																															echo '&lang=en';
-																														} else {
-																															echo '&lang=th';
-																														}
-																													} else {
-																														echo "";
-																													} ?>">
+																																				if ($_GET['lang'] == "en") {
+																																					echo '&lang=en';
+																																				} else {
+																																					echo '&lang=th';
+																																				}
+																																			} else {
+																																				echo "";
+																																			} ?>">
 
 										<div class="img-cooking">
 											<img class="img-fluid " src="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_detail[$i]['img_cover']; ?>">
@@ -387,8 +403,8 @@ if (isset($_GET['lang'])) {
 										<div class="text-cooking">
 											<h4 class="text-warning"><?php echo $row_cook_detail[$i]['detail_name']; ?></h4>
 											<p><?php echo $row_cook_detail[$i]['content1']; ?>
-											<?php echo $row_cook_detail[$i]['content2']; ?>
-											<?php echo $row_cook_detail[$i]['content3']; ?></p>
+												<?php echo $row_cook_detail[$i]['content2']; ?>
+												<?php echo $row_cook_detail[$i]['content3']; ?></p>
 											<span class="text-warning"><?php if (isset($_GET['lang'])) {
 																			if ($_GET['lang'] == "en") {
 																				echo 'Read More ++';

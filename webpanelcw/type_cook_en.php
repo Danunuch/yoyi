@@ -300,7 +300,7 @@ if (isset($_POST['delete_catalog'])) {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">หมวดหมู่</h4>
                         <div class="btn-lang">
-                            <a href="type_cook" style="background-color: #522206; color: #FFFFFF;" class="btn">EN</a>
+                            <a href="type_cook" style="background-color: #522206; color: #FFFFFF;" class="btn">TH</a>
                         </div>
                     </div>
                     <div class="card-body">

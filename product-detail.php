@@ -32,24 +32,11 @@ if (isset($_GET['product_id'])) {
 
 
 	//Query Product Img
-	if (isset($_GET['lang'])) {
-		$lang = $_GET['lang'];
-		if ($lang == "en") {
-			$stmt = $conn->prepare("SELECT * FROM product_img");
-			$stmt->execute();
-			$row_product_img = $stmt->fetchAll();
-		} else if ($lang == "th") {
-			$stmt = $conn->prepare("SELECT * FROM product_img");
-			$stmt->execute();
-			$row_product_img = $stmt->fetchAll();
-		}
-	} else {
-		$stmt = $conn->prepare("SELECT * FROM product_img");
-		$stmt->execute();
-		$row_product_img = $stmt->fetchAll();
-	}
+	$stmt_img = $conn->prepare("SELECT * FROM product_img WHERE id_product = :id");
+	$stmt_img->bindParam(":id", $product);
+	$stmt_img->execute();
+	$row_product_img = $stmt_img->fetchAll();
 }
-
 ?>
 
 
@@ -152,21 +139,21 @@ if (isset($_GET['product_id'])) {
 					<div class="col-md-6 col-lg-5 d-none d-md-block">
 						<div class="product-main-image" data-scrollzoom="false">
 							<div class="product-main-image-item">
-								<img class="zoom-product border" src='upload/product01.jpg' data-zoom-image="upload/product01.jpg" alt="Laura Mercier Foundation Powder" />
+								<img class="zoom-product border" src='webpanelcw/uploads/upload_product/<?php echo $row_product[0]['img_cover']; ?>' data-zoom-image="webpanelcw/uploads/upload_product/<?php echo $row_product[0]['img_cover']; ?>" alt="Laura Mercier Foundation Powder" />
 							</div>
 						</div>
 						<div class="product-images-carousel">
 							<ul id="smallGallery">
 
-								<?php for ($ii = 0; $ii < count($row_product_img); $ii++) { ?>
-									<?php for ($i = 1; $i < count($row_product_img); $i++) { ?>
+							
+									<?php for ($i = 0; $i < count($row_product_img); $i++) { ?>
 										<li>
-											<a href="#" class="zoomGalleryActive" data-image="upload/product0<?= $i ?>.jpg" data-zoom-image="upload/product0<?= $i ?>.jpg" data-target="279763451931">
+											<a href="#" class="zoomGalleryActive" data-image="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" data-zoom-image="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" data-target="279763451931">
 												<img class="border" src="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" alt="Laura Mercier Foundation Powder">
 											</a>
 										</li>
 									<?php } ?>
-								<?php } ?>
+						
 
 							</ul>
 						</div>
@@ -175,11 +162,11 @@ if (isset($_GET['product_id'])) {
 
 						<div class="clearfix"></div>
 						<ul class="mobileGallery-product">
-							<?php for ($ii = 0; $ii < count($row_product_img); $ii++) { ?>
+						
 								<?php for ($i = 0; $i < count($row_product_img); $i++) { ?>
 									<li><img src="webpanelcw/uploads/upload_product/<?php echo $row_product_img[$i]['img']; ?>" alt="Laura Mercier Foundation Powder" /></li>
 								<?php } ?>
-							<?php } ?>
+					
 						</ul>
 
 					</div>
