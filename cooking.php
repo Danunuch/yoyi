@@ -7,39 +7,51 @@ if (!isset($_SESSION)) {
 
 
 if (isset($_GET['detail_id'])) {
-	$detail_id = $_GET['detail_id'];
+	$detail = $_GET['detail_id'];
 
 	
-//Query cook Img
-	$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE id = :id");
-	$stmt_img->bindParam(":id", $detail_id);
-	$stmt_img->execute();
-	$row_cook_img = $stmt_img->fetchAll();
 
 	if (isset($_GET['lang'])) {
 		$lang = $_GET['lang'];
 		if ($lang == "en") {
 			$stmt = $conn->prepare("SELECT * FROM cook_detail_en WHERE id = :id");
-			$stmt->bindParam(':id', $detail_id);
+			$stmt->bindParam(':id', $detail);
 			$stmt->execute();
 			$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 		} else if ($lang == "th") {
 			$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE id = :id");
-			$stmt->bindParam(':id', $detail_id);
+			$stmt->bindParam(':id', $detail);
 			$stmt->execute();
 			$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 		}
 	} else {
 		$stmt = $conn->prepare("SELECT * FROM cook_detail WHERE id = :id");
-		$stmt->bindParam(':id', $detail_id);
+		$stmt->bindParam(':id', $detail);
 		$stmt->execute();
 		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 
-
-
 }
-
+//Query cook Img
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img_en WHERE id = :id");
+		$stmt_img->bindParam(":id", $detail);
+		$stmt_img->execute();
+		$row_cook_img = $stmt_img->fetchAll();
+	} else if ($lang == "th") {
+		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE id = :id");
+		$stmt_img->bindParam(":id", $detail);
+		$stmt_img->execute();
+		$row_cook_img = $stmt_img->fetchAll();
+	}
+} else {
+	$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE id = :id");
+	$stmt_img->bindParam(":id", $detail);
+	$stmt_img->execute();
+	$row_cook_img = $stmt_img->fetchAll();
+}
 
 //Query type
 if (isset($_GET['lang'])) {

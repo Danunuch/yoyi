@@ -59,8 +59,8 @@ if (isset($_GET['lang'])) {
 
 
                     <div class="box-social-icon ">
-                        <a href="" target="_blank"><i class="demo-icon icon-fi"></i></a>
-                        <a href="" target="_blank"><i class="demo-icon icon-ii"></i></a>
+                        <a href="<?php echo $row_contact['facebook']; ?>" target="_blank"><i class="demo-icon icon-fi"></i></a>
+                        <a href="<?php echo $row_contact['instragram']; ?>" target="_blank"><i class="demo-icon icon-ii"></i></a>
                     </div>
 
                 </div>
@@ -147,11 +147,11 @@ if (isset($_GET['lang'])) {
 
     <div class="left-btn">
         <div id="myDIV">
-            <a href="https://www.facebook.com/" target="_blank"><img class="img-fluid" src="images/l-icon01.png"></a>
-            <a href="https://line.me/en/" target="_blank"><img class="img-fluid" src="images/l-icon02.png"></a>
-            <a href="https://www.instagram.com/" target="_blank"><img class="img-fluid" src="images/l-icon03.png"></a>
-            <a href="tel:03535586769" target="_blank"><img class="img-fluid" src="images/l-icon04.png"></a>
-            <a href="mailto:sales.yoyifoods@gmail.com" target="_blank"><img class="img-fluid" src="images/l-icon05.png"></a>
+            <a href="<?php echo $row_contact['facebook']; ?>" target="_blank"><img class="img-fluid" src="images/l-icon01.png"></a>
+            <a href="<?php echo $row_contact['line']; ?>" target="_blank"><img class="img-fluid" src="images/l-icon02.png"></a>
+            <a href="<?php echo $row_contact['instragram']; ?>" target="_blank"><img class="img-fluid" src="images/l-icon03.png"></a>
+            <a href="tel:<?php echo $row_contact['tel']; ?>" target="_blank"><img class="img-fluid" src="images/l-icon04.png"></a>
+            <a href="mailto:<?php echo $row_contact['email']; ?>" target="_blank"><img class="img-fluid" src="images/l-icon05.png"></a>
         </div>
 
 

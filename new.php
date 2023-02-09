@@ -172,7 +172,7 @@ if (isset($_GET['lang'])) {
 								</div>
 								<div class="col-md-9">
 									<div class="text-new">
-										<h4><?php echo $row_news[$i]['title']; ?></h4>
+										<?php echo $row_news[$i]['title']; ?>
 										<p><?php echo $row_news[$i]['content']; ?></p>
 										<span class="text-warning"><?php if (isset($_GET['lang'])) {
 																		if ($_GET['lang'] == "en") {

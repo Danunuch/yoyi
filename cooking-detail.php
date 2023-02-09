@@ -9,8 +9,28 @@ if (!isset($_SESSION)) {
 
 if (isset($_GET['detail_id'])) {
 	$detail = $_GET['detail_id'];
-
 	
+
+//Query cook Img
+if (isset($_GET['lang'])) {
+	$lang = $_GET['lang'];
+	if ($lang == "en") {
+		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img_en WHERE id = :id");
+		$stmt_img->bindParam(":id", $detail);
+		$stmt_img->execute();
+		$row_cook_img = $stmt_img->fetchAll();
+	} else if ($lang == "th") {
+		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE id = :id");
+		$stmt_img->bindParam(":id", $detail);
+		$stmt_img->execute();
+		$row_cook_img = $stmt_img->fetchAll();
+	}
+} else {
+	$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE id = :id");
+	$stmt_img->bindParam(":id", $detail);
+	$stmt_img->execute();
+	$row_cook_img = $stmt_img->fetchAll();
+}
 
 	//Query Detail
 	if (isset($_GET['lang'])) {
@@ -32,14 +52,9 @@ if (isset($_GET['detail_id'])) {
 		$stmt->execute();
 		$row_cook_detail = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
-
-
-		//Query cook Img
-		$stmt_img = $conn->prepare("SELECT * FROM cook_detail_img WHERE detail_id = :id");
-		$stmt_img->bindParam(":id", $detail);
-		$stmt_img->execute();
-		$row_cook_img = $stmt_img->fetchAll();
 }
+
+
 
 ?>
 
@@ -139,108 +154,108 @@ if (isset($_GET['detail_id'])) {
 					<?php include("navigator.php"); ?>
 
 
-						<h4 class="text-warning"><?php echo $row_cook_detail['detail_name']; ?></h4>
+					<h4 class="text-warning"><?php echo $row_cook_detail['detail_name']; ?></h4>
 
 
 
-						<p><?php if ($row_cook_detail['content1'] == "") {
-								echo "style='display:none;'";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content1']; ?></p>
+					<p><?php if ($row_cook_detail['content1'] == "") {
+							echo "style='display:none;'";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content1']; ?></p>
 
 
 
-						<p><?php if ($row_cook_detail['content2'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content2']; ?></p>
+					<p><?php if ($row_cook_detail['content2'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content2']; ?></p>
 
 
-						<p><?php if ($row_cook_detail['content3'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content3']; ?></p>
-
-
-
-						<p><?php if ($row_cook_detail['content4'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content4']; ?></p>
+					<p><?php if ($row_cook_detail['content3'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content3']; ?></p>
 
 
 
-						<p><?php if ($row_cook_detail['content5'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content5']; ?></p>
+					<p><?php if ($row_cook_detail['content4'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content4']; ?></p>
 
 
 
-						<p><?php if ($row_cook_detail['content6'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content6']; ?></p>
+					<p><?php if ($row_cook_detail['content5'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content5']; ?></p>
 
 
 
-						<p><?php if ($row_cook_detail['content7'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content7']; ?></p>
-
-
-						<p><?php if ($row_cook_detail['content8'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content8']; ?></p>
+					<p><?php if ($row_cook_detail['content6'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content6']; ?></p>
 
 
 
-						<p><?php if ($row_cook_detail['content9'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content9']; ?></p>
+					<p><?php if ($row_cook_detail['content7'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content7']; ?></p>
 
 
-						<p><?php if ($row_cook_detail['content10'] == "null") {
-								echo "";
-							} else {
-								echo "";
-							} ?><?php echo $row_cook_detail['content10']; ?></p>
+					<p><?php if ($row_cook_detail['content8'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content8']; ?></p>
+
+
+
+					<p><?php if ($row_cook_detail['content9'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content9']; ?></p>
+
+
+					<p><?php if ($row_cook_detail['content10'] == "null") {
+							echo "";
+						} else {
+							echo "";
+						} ?><?php echo $row_cook_detail['content10']; ?></p>
 
 				</div>
-	
 
 
-			<div class="row mt-4">
+
+				<div class="row mt-4">
 
 
-			<?php for ($i = 0; $i < count($row_cook_img); $i++) { ?>
-					<div class="col-6 col-md-4">
-						<div class="view-seventh mb-4">
-							<a href="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
-								<div class="box-gallery">
-									<div class="bg-img">
-										<img class="img-fluid" src="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" alt="ชาเขียวไข่มุก">
+					<?php for ($i = 0; $i < count($row_cook_img); $i++) { ?>
+						<div class="col-6 col-md-4">
+							<div class="view-seventh mb-4">
+								<a href="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" class="b-link-stripe b-animate-go thickbox" title="ชาเขียวไข่มุก">
+									<div class="box-gallery">
+										<div class="bg-img">
+											<img class="img-fluid" src="webpanelcw/uploads/upload_cooking/<?php echo $row_cook_img[$i]['img']; ?>" alt="ชาเขียวไข่มุก">
+										</div>
+
 									</div>
-
-								</div>
-							</a>
+								</a>
+							</div>
 						</div>
-					</div>
-				<?php } ?>
+					<?php } ?>
 
-			</div>
+				</div>
 
 
 

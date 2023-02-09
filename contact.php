@@ -10,7 +10,7 @@ if (!isset($_SESSION)) {
 // error_reporting(0);
 
 
-$secret = "#";
+$secret = "6Lep9WYkAAAAAOl7o3Vd8zzS-8kl-s7nX-0tE8DG";
 
 
 if (isset($_POST['g-recaptcha-response'])) {
@@ -61,7 +61,7 @@ if (isset($_POST['g-recaptcha-response'])) {
               });
           })
           </script>";
-					echo "<meta http-equiv='refresh' content='2;url=contact'>";
+					echo "<meta http-equiv='refresh' content='1;url=contact'>";
 				} else {
 					echo "<script>
           $(document).ready(function() {
@@ -227,7 +227,7 @@ if (isset($_GET['lang'])) {
 
 
 
-					<form id="form_message" method="post" action="https://www.fireman-fb.com/contact" enctype="multipart/form-data">
+					<form id="form_message" method="post"  enctype="multipart/form-data">
 						<input type="hidden" name="_token" value="CuWWbZneZurP9giDfyM1iIKn0uHmfoXbkD1dQnhM">
 						<div class="row">
 
@@ -290,9 +290,9 @@ if (isset($_GET['lang'])) {
 
 
 						<div class="text-center">
-							<div class="g-recaptcha" data-sitekey="#" style="display: flex;justify-content: center;"></div>
+							<div class="g-recaptcha" data-sitekey="6Lep9WYkAAAAANUhiMya34_HRLreMhAsalzygz0V" style="display: flex;justify-content: center;"></div>
 							<div class="clearfix"></div>
-							<a href="" class="btn btn-warning btn-lg mt-4 px-5 rounded-0">
+							<button type="submit" name="submit" class="btn btn-warning btn-lg mt-4 px-5 rounded-0">
 								<span class="material-icons-sharp">
 									send
 								</span>
@@ -305,7 +305,7 @@ if (isset($_GET['lang'])) {
 									}
 								} else {
 									echo "ส่งข้อความ";
-								} ?></a>
+								} ?></button>
 						</div>
 					</form>
 
